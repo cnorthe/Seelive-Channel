@@ -27,6 +27,6 @@ Server2016Baseline -OutputPath C:\Mof\Server2016Baseline
 
 #Start-DscConfiguration -Path C:\Mof\Server2016Baseline -Wait -Verbose
 
-Test-DscConfiguration -Detailed | Select ResourcesNotInDesiredState -ExpandProperty ResourcesNotInDesiredState | Out-GridView
+Test-DscConfiguration -Detailed | Select-Object ResourcesNotInDesiredState -ExpandProperty ResourcesNotInDesiredState | Out-GridView
 
 Test-DscConfiguration -Path C:\Mof\Server2016Baseline -Verbose
