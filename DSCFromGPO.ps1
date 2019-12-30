@@ -1,10 +1,12 @@
-﻿
+﻿$cred = Get-Credential
+
 Configuration DSCFromGPO
 {
 
 	Import-DSCResource -ModuleName 'PSDesiredStateConfiguration' -ModuleVersion 1.1
-	Import-DSCResource -ModuleName 'AuditPolicyDSC' -ModuleVersion 1.4.0.0
-	Import-DSCResource -ModuleName 'SecurityPolicyDSC' -ModuleVersion 2.9.0.0
+	#Import-DSCResource -ModuleName 'AuditPolicyDSC' -ModuleVersion 1.4.0.0
+     Import-DSCResource -ModuleName 'SecurityPolicyDSC' -ModuleVersion 2.9.0.0
+     Import-DscResource -ModuleName 'xPSDesiredStateConfiguration' -ModuleVersion 8.10.0.0
 	# Module Not Found: Import-DSCResource -ModuleName 'PowerShellAccessControl'
 	Node localhost
 	{
@@ -71,7 +73,18 @@ Configuration DSCFromGPO
 
          }
 
+         xUser LocalUser
+          {
+               UserName = 'testuser'
+               Disabled = $false
+               Ensure = 'Present'
+               FullName = 'Test User'
+               #Password = $cred
+               PasswordChangeNotAllowed = $false
+               PasswordChangeRequired = $false
+               PasswordNeverExpires = $false
+          }
 	}
 }
 
-DSCFromGPO -OutputPath C:\Scripts\Output
+DSCFromGPO -OutputPath C:\Repo\Seelive-Channel\Mofs
