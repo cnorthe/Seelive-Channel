@@ -14,18 +14,18 @@ configuration PullClientConfigID
            RefreshFrequencyMins = 30
            RebootNodeIfNeeded = $true
         }
-        
+
         ConfigurationRepositoryShare SmbConfigShare
         {
             SourcePath = "\\testlabdsc01\DscSmbShare"
             #Credential = $cred
         }
-        
+
         ResourceRepositoryShare SmbResourceShare
         {
             SourcePath = "\\testlabdsc01\DscSmbShare"
             #Credential = $cred
-        }    
+        }
     }
 }
 

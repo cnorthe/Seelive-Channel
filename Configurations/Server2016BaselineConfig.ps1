@@ -1,4 +1,6 @@
-﻿configuration Server2016Baseline
+﻿$OrgSettingsPath = 'C:\Users\labdomainadmin\Documents\WindowsPowerShell\Modules\PowerSTIG\4.2.0\StigData\Processed'
+
+configuration Server2016Baseline
 {
 
     param
@@ -8,7 +10,7 @@
        $NodeName = 'localhost'
     )
 
-    Import-DscResource -ModuleName PowerSTIG -ModuleVersion 4.1.1
+    Import-DscResource -ModuleName PowerSTIG -ModuleVersion 4.2.0
 
     node localhost
     {
@@ -18,7 +20,7 @@
            OsVersion = '2016'
            OsRole   = 'MS'
            StigVersion = '1.8'
-           OrgSettings = 'C:\Temp\WindowsServer-2016-MS-1.8.org.default.xml'
+           OrgSettings = "$OrgSettingsPath\WindowsServer-2016-MS-1.8.org.default.xml"
         }
     }
 }

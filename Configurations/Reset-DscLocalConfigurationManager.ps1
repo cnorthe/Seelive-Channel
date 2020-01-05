@@ -16,7 +16,7 @@ Configuration ResetLCM {
             ActionAfterReboot              = 'ContinueConfiguration'
             AllowModuleOverwrite           = $false
             CertificateID                  = $null
-            ConfigurationDownloadManagers  = @{} 
+            ConfigurationDownloadManagers  = @{}
             ConfigurationID                = $null
             ConfigurationMode              = 'ApplyAndMonitor'
             ConfigurationModeFrequencyMins = 15
