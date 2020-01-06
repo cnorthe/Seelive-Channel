@@ -15,17 +15,17 @@ configuration MasterBaseline
 
         WindowsServer ServerStigBaseline
         {
-           OsVersion = $NodeName.OSVersion
-           OsRole   = $NodeName.OSRole
-           StigVersion = $NodeName.StigVersion
-           OrgSettings = $NodeName.OrgSettings
+           OsVersion = $Node.OSVersion
+           OsRole   = $Node.OSRole
+           StigVersion = $Node.StigVersion
+           OrgSettings = $Node.OrgSettings
         }
 
         InternetExplorer IEStigBaseline
         {
-            BrowserVersion = $NodeName.BrowserVersion
-            StigVersion = $NodeName.IeStigVersion
-            OrgSettings = $NodeName.IeOrgSettings
+            BrowserVersion = $Node.BrowserVersion
+            StigVersion = $Node.IeStigVersion
+            OrgSettings = $Node.IeOrgSettings
         }
     }
 
@@ -33,18 +33,18 @@ configuration MasterBaseline
     {
         WindowsClient ClientStigBaseline
         {
-           OsVersion = $NodeName.OSVersion
-           StigVersion = $NodeName.StigVersion
-           OrgSettings = $NodeName.OrgSettings
+           OsVersion = $Node.OSVersion
+           StigVersion = $Node.StigVersion
+           OrgSettings = $Node.OrgSettings
             # DomainName  = 'your.domain'
             # ForestName  = 'your.domin'
         }
 
         InternetExplorer IeStigBaseline
         {
-            BrowserVersion = $NodeName.BrowserVersion
-            StigVersion = $NodeName.IeStigVersion
-            OrgSettings = $NodeName.IeOrgSettings
+            BrowserVersion = $Node.BrowserVersion
+            StigVersion = $Node.IeStigVersion
+            OrgSettings = $Node.IeOrgSettings
         }
     }
 }
@@ -74,4 +74,4 @@ $ConfigurationData = @{
     )
 }
 
-MasterBaseline -ConfigurationData $ConfigurationData -
+MasterBaseline -ConfigurationData $ConfigurationData -OutputPath 'C:\Repo\Seelive-Channel\Mofs'
