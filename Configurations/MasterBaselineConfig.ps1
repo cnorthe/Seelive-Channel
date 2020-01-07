@@ -1,13 +1,6 @@
 configuration MasterBaseline
 {
 
-    param
-    (
-       [Parameter()]
-       [string]
-       $OrgSettingsPath = 'C:\Temp\StigData\Processed'
-    )
-
     Import-DscResource -ModuleName PowerSTIG -ModuleVersion 4.2.0
 
     Node $AllNodes.Where{$_.OsRole -eq 'MS'}.NodeName
@@ -15,12 +8,12 @@ configuration MasterBaseline
 
         WindowsServer ServerStigBaseline
         {
-           OsVersion = $Node.OSVersion
+           OsVersion = $Node.ServerOSVersion
            OsRole   = $Node.OSRole
-           StigVersion = $Node.StigVersion
-           OrgSettings = $Node.OrgSettings
+           StigVersion = $Node.ServerStigVersion
+           OrgSettings = $Node.ServerOrgSettings
         }
-
+        
         InternetExplorer IEStigBaseline
         {
             BrowserVersion = $Node.BrowserVersion
@@ -33,9 +26,9 @@ configuration MasterBaseline
     {
         WindowsClient ClientStigBaseline
         {
-           OsVersion = $Node.OSVersion
-           StigVersion = $Node.StigVersion
-           OrgSettings = $Node.OrgSettings
+           OsVersion = $Node.ClientOSVersion
+           StigVersion = $Node.ClientStigVersion
+           OrgSettings = $Node.ClientOrgSettings
             # DomainName  = 'your.domain'
             # ForestName  = 'your.domin'
         }
@@ -53,25 +46,25 @@ $ConfigurationData = @{
     AllNodes = @(
         @{
             NodeName = 'testlabdsc01'
-            OsVersion = '2019'
+            ServerOsVersion = '2019'
             OsRole = 'MS'
-            StigVersion = '1.2'
-            OrgSettings = "$OrgSettingsPath\WindowsServer-2019-MS-1.2.org.default.xml"
+            ServerStigVersion = '1.2'
+            ServerOrgSettings = 'C:\Temp\StigData\Processed\WindowsServer-2019-MS-1.2.org.default.xml'
             },
         @{
             NodeName = 'testlabcl01'
-            OsVersion = '10'
+            ClientOsVersion = '10'
             OsRole = '10'
-            StigVersion = '1.18'
-            OrgSettings = "$OrgSettingsPath\WindowsClient-10-1.18.org.default.xml"
+            ClientStigVersion = '1.18'
+            ClientOrgSettings = 'C:\Temp\StigData\Processed\WindowsClient-10-1.18.org.default.xml'
             },
         @{
             NodeName = '*'
             BrowserVersion = '11'
             IeStigVersion = '1.18'
-            IeOrgSettings = "$OrgSettingsPath\InternetExplorer-11-1.18.org.default.xml"
+            IeOrgSettings = 'C:\Temp\StigData\Processed\InternetExplorer-11-1.18.org.default.xml'
             }
     )
 }
 
-MasterBaseline -ConfigurationData $ConfigurationData -OutputPath 'C:\Repo\Seelive-Channel\Mofs'
+MasterBaseline -ConfigurationData $ConfigurationData -OutputPath 'C:\Repo\Seelive-Channel\Mofs\MasterBaseline'
