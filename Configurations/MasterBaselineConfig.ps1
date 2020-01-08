@@ -69,7 +69,12 @@ $ConfigurationData = @{
 
 MasterBaseline -ConfigurationData $ConfigurationData -OutputPath 'C:\Repo\Seelive-Channel\Mofs\MasterBaseline'
 
-Test-DscConfiguration -Path 'C:\Repo\Seelive-Channel\Mofs\MasterBaseline' | Select-Object ResourcesNotInDesiredState -ExpandProperty ResourcesNotInDesiredState | Out-GridView
+$ResourcesNotInDesiredState = Test-DscConfiguration -Path 'C:\Repo\Seelive-Channel\Mofs\MasterBaseline' | Select-Object -ExpandProperty ResourcesNotInDesiredState
+
+$ResourcesNotInDesiredState | Select-Object @{Name='ComputerName';Expression={$_.PSComputerName}}, ModuleName, ModuleVersion, InDesiredState, @{Name='Revision Description';Expression={$_.InstanceName}}, RebootRequested, ResourceName, StartDate, StateChanged | Out-GridView
+
+
+
 
 Start-DSCEAscan -MofFile 'C:\Repo\Seelive-Channel\Mofs\MasterBaseline\testlabcl01.mof' -ComputerName testlabcl01 -OutputPath C:\Repo\Seelive-Channel\Mofs\DSCEA
 
