@@ -73,3 +73,24 @@ $ConfigurationData = @{
 MasterBaseline -ConfigurationData $ConfigurationData -OutputPath 'C:\Repo\Seelive-Channel\Mofs\MasterBaseline'
 $ResourcesNotInDesiredState = Test-DscConfiguration -Path 'C:\Repo\Seelive-Channel\Mofs\MasterBaseline' | Select-Object -ExpandProperty ResourcesNotInDesiredState
 $ResourcesNotInDesiredState | Select-Object @{Name='ComputerName';Expression={$_.PSComputerName}}, ModuleName, ModuleVersion, InDesiredState, @{Name='Revision Description';Expression={$_.InstanceName}}, RebootRequested, ResourceName, StartDate, StateChanged | Out-GridView
+
+
+
+
+
+
+
+Start-DSCEAscan -MofFile 'C:\Repo\Seelive-Channel\Mofs\MasterBaseline\testlabcl01.mof' -ComputerName testlabcl01 -OutputPath C:\Repo\Seelive-Channel\Mofs\DSCEA
+
+$audit = Import-Clixml -Path 'C:\Repo\Seelive-Channel\Mofs\DSCEA\results.20200107-1647-11.xml'
+$audit.Compliance
+$audit.Compliance.ResourcesNotInDesiredState
+$audit.Compliance.ResourcesNotInDesiredState[0]
+
+#Document PowerSTIG Exceptions
+$audit = Test-DscConfiguration -ReferenceConfiguration C:\dev\localhost.mof
+
+$audit = Import-Clixml -Path 'C:\repo\Seelive-Channel\Mofs\DSCEA\results.20200103-1517
+
+#Exceptions that need documentation
+($audit.ResourcesNotInDesiredState + $audit.ResourcesInDesiredState) | Where-Object ResourceId -match \[Exception\]

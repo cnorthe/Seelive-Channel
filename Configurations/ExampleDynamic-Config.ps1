@@ -9,17 +9,17 @@
         }
 
 
-            Foreach ($computer in @('testlabcl01', 'testlabcl02', 'Server03'))
-    {
-        if (Test-Connection -ComputerName $computer)
+Foreach ($computer in @('testlabcl01', 'testlabcl02', 'Server03'))
         {
-            Node $computer
+            if (Test-Connection -ComputerName $computer)
             {
-                Service "Spooler"
+                Node $computer
                 {
-                    Name = "Spooler"
-                    State = "Started"
+                    Service "Spooler"
+                    {
+                        Name = "Spooler"
+                        State = "Started"
+                    }
                 }
             }
         }
-    }
