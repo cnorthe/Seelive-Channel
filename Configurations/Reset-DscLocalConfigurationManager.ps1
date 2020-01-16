@@ -2,7 +2,11 @@
 Param(
     [Parameter()]
     [string[]]
-    $ComputerName = @('localhost')
+    $ComputerName = @('localhost'),
+
+    [Parameter()]
+    [string]
+    $OutputPath = 'C:\Repo\Seelive-Channel\ResetLCM'
 )
 
 [DscLocalConfigurationManager()]
@@ -33,6 +37,6 @@ Configuration ResetLCM {
     }
 }
 
-ResetLCM -NodeName $ComputerName -OutputPath '.\ResetLCM'
+ResetLCM -NodeName $ComputerName -OutputPath $OutputPath
 
-Set-DscLocalConfigurationManager -Path '.\ResetLCM' -ComputerName $ComputerName
+Set-DscLocalConfigurationManager -Path $OutputPath -ComputerName $ComputerName
