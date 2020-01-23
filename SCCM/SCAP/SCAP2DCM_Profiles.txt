@@ -1,0 +1,22 @@
+<xccdf:Profile id="xccdf_mil.disa.stig_profile_MAC-1_Classified">
+<xccdf:Profile id="xccdf_mil.disa.stig_profile_MAC-1_Public">
+<xccdf:Profile id="xccdf_mil.disa.stig_profile_MAC-1_Sensitive">
+
+<xccdf:Profile id="xccdf_mil.disa.stig_profile_MAC-2_Classified">
+<xccdf:Profile id="xccdf_mil.disa.stig_profile_MAC-2_Public">
+<xccdf:Profile id="xccdf_mil.disa.stig_profile_MAC-2_Sensitive">
+
+<xccdf:Profile id="xccdf_mil.disa.stig_profile_MAC-3_Classified">
+<xccdf:Profile id="xccdf_mil.disa.stig_profile_MAC-3_Public">
+<xccdf:Profile id="xccdf_mil.disa.stig_profile_MAC-3_Sensitive">
+
+<xccdf:Profile id="xccdf_mil.disa.stig_profile_Disable_Slow_Rules">
+
+<xccdf:Profile id="xccdf_mil.disa.stig_profile_CAT_I_Only">
+
+Microsoft.Sces.ScapToDcm.exe -scap "E:\Source\SCAP2DCM\U_Windows_10_V1R13_STIG_SCAP_1-2_Benchmark" -out "E:\Source\SCAP2Convert\WIN10" -select scap_mil.disa.stig_datastream_U_Windows_10_V1R13_STIG_SCAP_1-2_Benchmark/xccdf_mil.disa.stig_benchmark_Windows_10_STIG/xccdf_mil.disa.stig_profile_CAT_I_Only -maxci "500" -log E:\SCAP2DCM_Win10_CAT1.log
+
+
+Microsoft.Sces.ScapToDcm.exe -scap "E:\Source\SCAP2DCM\U_MS_Windows_Server_2016_V1R7_STIG_SCAP_1-2_Benchmark.xml" -out "E:\Source\SCAP2DCM\Server2016\CAT1" -select scap_mil.disa.stig_datastream_U_MS_Windows_Server_2016_V1R7_STIG_SCAP_1-2_Benchmark/xccdf_mil.disa.stig_benchmark_Windows_Server_2016_STIG/xccdf_mil.disa.stig_profile_CAT_I_Only -maxci "500" -log E:\SCAP2DCM_Server2016_CAT1.log
+
+22 mins to import 316 CIs and 1 Baseline
