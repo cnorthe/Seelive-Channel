@@ -20,7 +20,7 @@ param
     ##### Import SCCM PoSH Module
     [ValidateSet("Classified","Public","Sensitive", "CAT1", "SlowRules")]
     [string]$ImportType,
-        
+
     ##### Set File Directory Paths where SCAP CAB files are located
     [string]$FileDirectory1="E:\Source\SCAP2DCM\Server2012\Classified",
     [string]$Parse_Results1="New-Object System.Collections.ArrayList",
