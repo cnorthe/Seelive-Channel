@@ -31,7 +31,7 @@ param
     [string]$FileDirectory4="E:\Source\SCAP2DCM\Server2012\CAT1",
     [string]$Parse_Results4="New-Object System.Collections.ArrayList",
     [string]$FileDirectory5="E:\Source\SCAP2DCM\Server2012\SlowRules",
-    [string]$Parse_Results5="New-Object System.Collections.ArrayList"    
+    [string]$Parse_Results5="New-Object System.Collections.ArrayList"
 )
 
 
