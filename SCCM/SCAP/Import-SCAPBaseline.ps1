@@ -1,4 +1,4 @@
-function Import-SCAPBaseline
+function Import-ScapBaseline
 {
     [cmdletbinding()]
     param
