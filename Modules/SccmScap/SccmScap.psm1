@@ -66,6 +66,16 @@ function Uninstall-MSIFile
 }
 'C:\Temp\ConfigMgrSCAPExtension\ConfigMgrExtensionsForSCAP.msi' | Uninstall-MSIFile -Verbose
 
+
+<#
+.Synopsis
+   Converts Security Content Automation Protocol (SCAP) content to (DCM) .cab extenstion.
+.DESCRIPTION
+   SCCM extensions for SCAP converts Security Content Automation Protocol (SCAP) content for use by desired configuration
+   management (DCM) and DCM reports into SCAP reporting format.
+.EXAMPLE
+   Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile "$windows10Folder\CAT1" -Select "$windows10Stig/xccdf_mil.disa.stig_profile_CAT_I_Only" -LogFile "$logFolder\SCAP2DCM_Windows10_CAT_I_Only.log"
+#>
 function Convert-Scap2Cab
  {
     param
