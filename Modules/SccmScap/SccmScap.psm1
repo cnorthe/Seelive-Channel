@@ -175,10 +175,12 @@ function Import-SCCMPoSHModule
 function New-ConfigurationFolders
 {
 
-    #Create Configuration Collections, Items, Baseline Folders
+    #Create Collection Folderss, Items, Baseline Folders
     New-Item -Name 'Configuration Items' -Path $($SiteCode.Name+":\DeviceCollection")
     New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\DeviceCollection\Configuration Items")
     New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\DeviceCollection\Configuration Items")
+
+    #Create Configuration Item and Baseline Folders
     New-Item -Name 'Configuration Items' -Path $($SiteCode.Name+":\ConfigurationItem")
     New-Item -Name 'CI - Workstation Collections' -Path  $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
     New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
