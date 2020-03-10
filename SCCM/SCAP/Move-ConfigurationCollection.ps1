@@ -32,7 +32,7 @@ function Move-ConfigurationCollection
 
     foreach ($cmDeviceCollection in $cmDeviceCollections)
     {
-        Move-CMObject -FolderPath $FolderPath -InputObject $inputObject
+        Move-CMObject -FolderPath $FolderPath -InputObject $InputObject
 
         Write-Verbose -Verbose "Moving $($cmDeviceCollection.Name) collection in $($FolderPath)."
     }
