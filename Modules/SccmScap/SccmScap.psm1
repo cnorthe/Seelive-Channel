@@ -1,71 +1,3 @@
-function Install-MSIFile 
-{
-
-    [CmdletBinding()]
-    Param(
-        [parameter(mandatory = $true, ValueFromPipeline = $true, ValueFromPipelinebyPropertyName = $true)]
-        [ValidateNotNullorEmpty()]
-        [string]$msiFile,
-
-        [parameter()]
-        [ValidateNotNullorEmpty()]
-        [string]$targetDir
-    )
-    if (!(Test-Path $msiFile)) {
-        throw "Path to the MSI File $($msiFile) is invalid. Please supply a valid MSI file"
-    }
-    $arguments = @(
-        "/i"
-        "`"$msiFile`""
-        "/qn"
-        "/norestart"
-    )
-    if ($targetDir) {
-        if (!(Test-Path $targetDir)) {
-            throw "Path to the Installation Directory $($targetDir) is invalid. Please supply a valid installation directory"
-        }
-        $arguments += "INSTALLDIR=`"$targetDir`""
-    }
-    Write-Verbose "Installing $msiFile....."
-    $process = Start-Process -FilePath msiexec.exe -ArgumentList $arguments -Wait -PassThru
-    if ($process.ExitCode -eq 0) {
-        Write-Verbose "$msiFile has been successfully installed"
-    }
-    else {
-        Write-Verbose "installer exit code  $($process.ExitCode) for file  $($msifile)"
-    }
-}
-'C:\Temp\ConfigMgrSCAPExtension\ConfigMgrExtensionsForSCAP.msi' | Install-MSIFile -Verbose
-
-function Uninstall-MSIFile
-{
-
-    [CmdletBinding()]
-    Param(
-        [parameter(mandatory = $true, ValueFromPipeline = $true, ValueFromPipelinebyPropertyName = $true)]
-        [ValidateNotNullorEmpty()]
-        [string]$msiFile
-    )
-    if (!(Test-Path $msiFile)) {
-        throw "Path to the MSI File $($msiFile) is invalid. Please supply a valid MSI file"
-    }
-    $arguments = @(
-        "/x"
-        "`"$msiFile`""
-        "/qn"
-        "/norestart"
-    )
-    Write-Verbose "Uninstalling $msiFile....."
-    $process = Start-Process -FilePath msiexec.exe -ArgumentList $arguments -Wait -PassThru
-    if ($process.ExitCode -eq 0) {
-        Write-Verbose "$msiFile has been successfully uninstalled"
-    }
-    else {
-        Write-Error "installer exit code  $($process.ExitCode) for file  $($msifile)"
-    }
-}
-'C:\Temp\ConfigMgrSCAPExtension\ConfigMgrExtensionsForSCAP.msi' | Uninstall-MSIFile -Verbose
-
 
 <#
 .Synopsis
@@ -102,58 +34,7 @@ function Convert-Scap2Cab
     & $ScapToDcmPath -Scap $ScapXml -Out $OutPutFile -Select $Select -MaxCi $MaxCi -Log $LogFile
  }
 
-<#
-#Windows 10 SCAP xml & Stig xccdf
-$windows10Scap = 'C:\Temp\U_MS_Windows_10_V1R15_STIG_SCAP_1-2_Benchmark\U_MS_Windows_10_V1R15_STIG_SCAP_1-2_Benchmark.xml'
-$windows10Stig = 'scap_mil.disa.stig_datastream_U_MS_Windows_10_V1R15_STIG_SCAP_1-2_Benchmark/xccdf_mil.disa.stig_benchmark_Windows_10_STIG'
 
-#Server 2016 SCAP xml & Stig xccdf
-$server2016Scap = 'C:\Temp\U_MS_Windows_Server_2016_V1R10_STIG_SCAP_1-2_Benchmark\U_MS_Windows_Server_2016_V1R10_STIG_SCAP_1-2_Benchmark.xml'
-$server2016Stig = 'scap_mil.disa.stig_datastream_U_MS_Windows_Server_2016_V1R10_STIG_SCAP_1-2_Benchmark/xccdf_mil.disa.stig_benchmark_Windows_Server_2016_STIG'
-
-#Sever 2019 SCAP xml & Stig xccdf
-$server2019Scap = 'C:\Temp\U_MS_Windows_Server_2019_V1R10_STIG_SCAP_1-2_Benchmark\U_MS_Windows_Server_2019_V1R10_STIG_SCAP_1-2_Benchmark.xml'
-$server2019Stig = 'scap_mil.disa.stig_datastream_U_MS_Windows_Server_2019_V1R10_STIG_SCAP_1-2_Benchmark/xccdf_mil.disa.stig_benchmark_Windows_Server_2019_STIG'
-
-#Windows 10 Scap2Cab
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\CAT1' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_CAT_I_Only" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_CAT_I_Only.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\SlowRules' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_Disable_Slow_Rules" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_Disable_Slow_Rules.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Classified' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-3_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-3_Classified.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Sensitive' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-3_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-3_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Public' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-3_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-3_Public.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Classified' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-2_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-2_Classified.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Sensitive' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-2_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-2_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Public' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-2_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-2_Public.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Classified' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-1_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-1_Classified.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Sensitive' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-1_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-1_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Public' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-1_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-1_Public.log'
-
-#Server2016 Scap2Cab
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\CAT1' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_CAT_I_Only" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_CAT_I_Only.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\SlowRules' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_Disable_Slow_Rules" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_Disable_Slow_Rules.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Classified' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-3_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-3_Classified.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Sensitive' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-3_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-3_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Public' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-3_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-3_Public.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Classified' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-2_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-2_Classified.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Sensitive' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-2_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-2_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Public' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-2_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-2_Public.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Classified' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-1_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-1_Classified.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Sensitive' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-1_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-1_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Public' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-1_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-1_Public.log'
-
-#Sever2019 Scap2Cab
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\CAT1' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_CAT_I_Only" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_CAT_I_Only.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\SlowRules' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_Disable_Slow_Rules" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_Disable_Slow_Rules.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Classified' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-3_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-3_Classified.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Sensitive' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-3_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-3_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Public' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-3_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-3_Public.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Classified' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-2_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-2_Classified.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Sensitive' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-2_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-2_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Public' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-2_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-2_Public.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Classified' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-1_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-1_Classified.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Sensitive' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-1_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-1_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Public' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-1_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-1_Public.log'
-#>
 function Import-SCCMPoSHModule
 {
     #Load Configuration Manager PowerShell Module
@@ -166,138 +47,75 @@ function Import-SCCMPoSHModule
 
 <#
 .Synopsis
-   Creates folders and Collections in System Center Configuration Manager
+   Creates folders in System Center Configuration Manager
 .DESCRIPTION
    Creates Configuration Item folders and Collections in System Center Configuration Manager
 .EXAMPLE
-   New-ConfigurationFolders
+   New-ConfigurationFolder -Name 'Configuration Collections' -Path $SiteCode.Name+"\DeviceCollection"
 #>
-function New-ConfigurationFolders
+function New-ConfigurationFolder
 {
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Mandatory=$true)]
+        [string]
+        $Name,
 
-    #Create Collection Folderss, Items, Baseline Folders
-    New-Item -Name 'Configuration Items' -Path $($SiteCode.Name+":\DeviceCollection")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\DeviceCollection\Configuration Items")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\DeviceCollection\Configuration Items")
+        [Parameter()]
+        [string]
+        $Path
+    )
 
-    #Create Configuration Item and Baseline Folders
-    New-Item -Name 'Configuration Items' -Path $($SiteCode.Name+":\ConfigurationItem")
-    New-Item -Name 'CI - Workstation Collections' -Path  $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'Configuration Baselines' -Path $($SiteCode.Name+":\ConfigurationBaseline")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
+    New-Item -Name $Name -Path $Path -Force
+    Write-Verbose -Verbose "Creating $($Name) folder in $($Path)."
+}
 
-    New-Item -Name 'DISA STIGs' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\DISA STIGs")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\DISA STIGs")
-    New-Item -Name 'GPOs' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'Active Directory OU' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'CPU' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\CPU")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\CPU")
-    New-Item -Name 'Installed Software' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\Installed Software")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\Installed Software")
-    New-Item -Name 'IP Addresses' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'Logical Disks' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\Logical Disks")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\Logical Disks")
-    New-Item -Name 'Memory' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\Memory")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\Memory")
-    New-Item -Name 'Physical Drives' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\Physical Drives")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\Physical Drives")
-    New-Item -Name 'Windows Services' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\Windows Services")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\Windows Services")
-    New-Item -Name 'Windows Features' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\Windows Features")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items\Windows Features")
-    New-Item -Name 'Active Directory Groups' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'Active Directory Service Accounts' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'DNS Entries' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'Exchange Configuration' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'VMWare Configuration' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'Backup Configuration' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'Switches' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
-    New-Item -Name 'Routers' -Path $($SiteCode.Name+":\ConfigurationItem\Configuration Items")
+<#
+.Synopsis
+   Creates a collection for devices and adds the collection to the Configuration Manager hierarchy.
+.DESCRIPTION
+   Creates a collection for devices and adds the collection to the Configuration Manager hierarchy.
+.EXAMPLE
+    $collectionName = "Test All Windows 10 Clients"
+    $queryExpression = "select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System where SMS_R_System.OperatingSystemNameandVersion like '%Workstation 10.0%' and SMS_R_System.Client = '1'"
+    $ruleName = $collectionName
+    $comment = $collectionName
 
-    New-Item -Name 'DISA STIGs' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\DISA STIGs")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\DISA STIGs")
-    New-Item -Name 'GPOs' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'Active Directory OU' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'CPU' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\CPU")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\CPU")
-    New-Item -Name 'Installed Software' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\Installed Software")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\Installed Software")
-    New-Item -Name 'IP Addresses' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'Logical Disks' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\Logical Disks")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\Logical Disks")
-    New-Item -Name 'Memory' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\Memory")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\Memory")
-    New-Item -Name 'Physical Drives' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\Physical Drives")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\Physical Drives")
-    New-Item -Name 'Windows Services' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\Windows Services")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\Windows Services")
-    New-Item -Name 'Windows Features' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'CI - Workstation Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\Windows Features")
-    New-Item -Name 'CI - Server Collections' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines\Windows Features")
-    New-Item -Name 'Active Directory Groups' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'Active Directory Service Accounts' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'DNS Entries' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'Exchange Configuration' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'VMWare Configuration' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'Backup Configuration' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'Switches' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
-    New-Item -Name 'Routers' -Path $($SiteCode.Name+":\ConfigurationBaseline\Configuration Baselines")
+   New-ConfigurationCollection -CollectionName $collectionName -Comment $comment -LimitingCollectionName 'All Systems' -QueryExpression $queryExpression -RuleName $ruleName
+#>
+function New-ConfigurationCollection
+{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]
+        $CollectionName,
 
-    #Create Collections
-    #List of Collections Query
-    $Collection1 = @{Name = "CI - All Windows 10 Clients"; Query = "select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System where SMS_R_System.OperatingSystemNameandVersion like '%Workstation 10.0%' and SMS_R_System.Client = '1'"}
-    $Collection2 = @{Name = "CI - All Server 2016 Clients"; Query = "select SMS_R_System.ResourceId, SMS_R_System.ResourceType, SMS_R_System.Name, SMS_R_System.SMSUniqueIdentifier, SMS_R_System.ResourceDomainORWorkgroup, SMS_R_System.Client from  SMS_R_System inner join SMS_G_System_OPERATING_SYSTEM on SMS_G_System_OPERATING_SYSTEM.ResourceID = SMS_R_System.ResourceId where SMS_R_System.OperatingSystemNameandVersion like '%Server 10.0%' and SMS_G_System_OPERATING_SYSTEM.Caption like '%Server 2016%' and SMS_R_System.Client = '1'"}
-    $Collection3 = @{Name = "CI - All Server 2019 Clients"; Query = "select SMS_R_System.ResourceId, SMS_R_System.ResourceType, SMS_R_System.Name, SMS_R_System.SMSUniqueIdentifier, SMS_R_System.ResourceDomainORWorkgroup, SMS_R_System.Client from  SMS_R_System inner join SMS_G_System_OPERATING_SYSTEM on SMS_G_System_OPERATING_SYSTEM.ResourceID = SMS_R_System.ResourceId where SMS_R_System.OperatingSystemNameandVersion like '%Server 10.0%' and SMS_G_System_OPERATING_SYSTEM.Caption like '%Server 2019%' and SMS_R_System.Client = '1'"}
+        [Parameter()]
+        [string]
+        $Comment,
 
-    #Define possible limiting collections
-    $LimitingCollectionAll = "All Systems"
-    #$LimitingCollectionAllWork = "All Workstations"
-    #$LimitingCollectionAllWorkAdmin = "All Workstations - Admin"
-    #$LimitingCollectionAllServer = "All Servers"
+        [Parameter(Mandatory = $true)]
+        [string]
+        $LimitingCollectionName = 'All Systems',
+
+        [Parameter(Mandatory = $true)]
+        [string]
+        $QueryExpression,
+
+        [Parameter(Mandatory = $true)]
+        [string]
+        $RuleName
+    )
 
     #Refresh Schedule
-    $Schedule = New-CMSchedule –RecurInterval Days –RecurCount 2
+    $schedule = New-CMSchedule –RecurInterval Days –RecurCount 2
 
-    #Create Collection
-    #try{
-    New-CMDeviceCollection -Name $Collection1.Name -Comment "CI - All Windows 10 Clients" -LimitingCollectionName $LimitingCollectionAll -RefreshSchedule $Schedule -RefreshType 2 | Out-Null
-    Add-CMDeviceCollectionQueryMembershipRule -CollectionName $Collection1.Name -QueryExpression $Collection1.Query -RuleName $Collection1.Name
-    Write-host *** Collection $Collection1.Name created ***
-
-    New-CMDeviceCollection -Name $Collection2.Name -Comment "CI - All Server 2016 Clients" -LimitingCollectionName $LimitingCollectionAll -RefreshSchedule $Schedule -RefreshType 2 | Out-Null
-    Add-CMDeviceCollectionQueryMembershipRule -CollectionName $Collection2.Name -QueryExpression $Collection2.Query -RuleName $Collection2.Name
-    Write-host *** Collection $Collection2.Name created ***
-
-    New-CMDeviceCollection -Name $Collection3.Name -Comment "CI - All Server 2019 Clients" -LimitingCollectionName $LimitingCollectionAll -RefreshSchedule $Schedule -RefreshType 2 | Out-Null
-    Add-CMDeviceCollectionQueryMembershipRule -CollectionName $Collection3.Name -QueryExpression $Collection3.Query -RuleName $Collection3.Name
-    Write-host *** Collection $Collection3.Name created ***
-
-    #Move the collections to the right folder
-    #CI - Workstation Collections
-    $FolderPath = $SiteCode.Name+":\DeviceCollection\Configuration Items\CI - Workstation Collections"
-    Move-CMObject -FolderPath $FolderPath -InputObject (Get-CMDeviceCollection -Name $Collection1.Name)
-
-    #CI - Server Collections
-    $FolderPath = $SiteCode.Name+":\DeviceCollection\Configuration Items\CI - Server Collections"
-    Move-CMObject -FolderPath $FolderPath -InputObject (Get-CMDeviceCollection -Name $Collection2.Name)
-    Move-CMObject -FolderPath $FolderPath -InputObject (Get-CMDeviceCollection -Name $Collection3.Name)
+    New-CMDeviceCollection -Name $CollectionName -Comment $Comment -LimitingCollectionName $LimitingCollectionName -RefreshSchedule $Schedule -RefreshType 2 | Out-Null
+    Add-CMDeviceCollectionQueryMembershipRule -CollectionName $CollectionName -QueryExpression $QueryExpression -RuleName $RuleName
+    Write-Verbose -Verbose "Creating $($CollectionName) Collection."
 }
 
 <#
@@ -327,16 +145,125 @@ function Import-ScapBaseline
     foreach ($file in $files)
     {
         Import-CMBaseline -FileName $file.FullName -Force
-        Write-Verbose -Verbose "$($file.Name) SCAP Baselines and Configuration Items imported successfully."
+        Write-Verbose -Verbose "$($file.Name) SCAP Baseline and Configuration Items imported successfully."
     }
 }
 
 <#
-#Location for SCAP CAB Benchmarks
-$ImportFolder = 'C:\temp\SCAP2Convert'
-
-Import-SCAPBaseline -Path "$ImportFolder\Windows10"
-Import-SCAPBaseline -Path "$ImportFolder\Server2016"
-Import-SCAPBaseline -Path "$ImportFolder\Server2019"
+.Synopsis
+   Move configuration items in System Center Configuration Manager
+.DESCRIPTION
+   This function gets configuration items and stores it in an array then move them
+   to specified folder path.
+.EXAMPLE
+   $serverConfigurationItems = 'oval.mil.disa*'
+    $serverFolderPath = $($SiteCode.name+":\ConfigurationItem\Configuration Items\CI - Server Collections")
+    $serverInputObjects = (Get-CMConfigurationItem  -Name $serverConfigurationItems -Fast)
+    Move-ConfigurationItem -Name $serverConfigurationItems -FolderPath $serverFolderPath -InputObject $serverInputObjects
 #>
+function Move-ConfigurationItem
+{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter()]
+        [string]
+        $Name,
 
+        [Parameter(Mandatory = $true)]
+        [string]
+        $FolderPath,
+
+        [Parameter(Mandatory = $true)]
+        [system.array]
+        $InputObject
+    )
+
+    $cmConfigurationNames = Get-CMConfigurationItem  -Name $Name -Fast
+
+    foreach ($cmConfigurationName in $cmConfigurationNames)
+    {
+        Move-CMObject -FolderPath $FolderPath -InputObject $inputObject
+        Write-Verbose -Verbose "Moving $($cmConfigurationName.LocalizedDisplayName) configuration item in $($FolderPath)."
+    }
+}
+
+<#
+.Synopsis
+   Move configuration baseline items in System Center Configuration Manager
+.DESCRIPTION
+   This function gets configuration baselines and stores it in an array then move them
+   to specified folder path.
+.EXAMPLE
+   $serverBaselineItems = 'Windows Server*'
+    $serverFolderPath = $($SiteCode.name+":\ConfigurationBaseline\Configuration Baselines\CI - Server Collections")
+    $serverInputObjects = (Get-CMBaseline -Name $serverBaselineItems)
+    Move-ConfigurationBaseline -Name $serverBaselineItems -FolderPath $serverFolderPath -InputObject $serverInputObjects
+#>
+function Move-ConfigurationBaseline
+{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter()]
+        [string]
+        $Name,
+
+        [Parameter(Mandatory = $true)]
+        [string]
+        $FolderPath,
+
+        [Parameter(Mandatory = $true)]
+        [system.array]
+        $InputObject
+    )
+
+    $cmBaselineNames = Get-CMBaseline -Name $Name
+
+    foreach ($cmBaselineName in $cmBaselineNames)
+    {
+        Move-CMObject -FolderPath $FolderPath -InputObject $inputObject
+        Write-Verbose -Verbose "Moving $($cmBaselineName.LocalizedDisplayName) Baselines in $($FolderPath)."
+    }
+}
+
+<#
+.Synopsis
+   Creates configuration baseline deployments in System Center Configuration Manager
+.DESCRIPTION
+   This function creates configuration baseline deployments in System Center Configuration Manager
+.EXAMPLE
+    $cmBaselineName = 'Baseline Name'
+    $collectionName = 'All Windows 10 Clients'
+    New-ConfigurationDeployment -BaselineName $cmBaselineName -CollectionName $collectionName -ParameterValue 90 -PostponeDateTime 2020/03/01
+#>
+function New-ConfigurationDeployment
+{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Mandatory=$true)]
+        [string]
+        $BaselineName,
+
+        [Parameter()]
+        [string]
+        $CollectionName,
+
+        [Parameter()]
+        [boolean]
+        $EnableEnforcement,
+
+        [Parameter()]
+        [int]
+        $ParameterValue = 90,
+
+        [Parameter()]
+        [datetime]
+        $PostponeDateTime = 2020/03/01
+    )
+
+        $schedule = New-CMSchedule -RecurCount 1 -RecurInterval Days
+
+        New-CMBaselineDeployment -BaselineName $BaselineName -CollectionName $CollectionName -GenerateAlert $True -MonitoredByScom $True -ParameterValue $ParameterValue -PostponeDateTime $PostponeDateTime -Schedule $schedule | Out-Null
+}
