@@ -55,12 +55,13 @@ Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Ser
 Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Public' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-1_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-1_Public.log'
 #>
 
-#Create new Configuration Folders
+#Create Configuration Folders
 
+<#
 #Folder Path
-$deviceCollectionPath = $SiteCode.Name+"\DeviceCollection"
-$configurationItemPath = $SiteCode.Name+"\ConfigurationItem"
-$configurationBaselinePath = $SiteCode.Name+"\ConfigurationBaseline"
+$deviceCollectionPath = $SiteCode.Name+":\DeviceCollection"
+$configurationItemPath = $SiteCode.Name+":\ConfigurationItem"
+$configurationBaselinePath = $SiteCode.Name+":\ConfigurationBaseline"
 
 #Folder Name
 $configurationCollectionFolder = 'Configuration Collections'
@@ -85,19 +86,25 @@ $CBWin10Path = "$configurationBaselinePath\$configurationBaselineFolder\$windows
 $CBServer2016Path = "$configurationBaselinePath\$configurationBaselineFolder\$server2016Folder"
 $CBServer2019Path = "$configurationBaselinePath\$configurationBaselineFolder\$server2019Folder"
 
-<#
-#Create Configuration Collection Folders
+#Collection Folders
 New-ConfigurationFolder -Name $configurationCollectionFolder -Path $deviceCollectionPath
 New-ConfigurationFolder -Name $windows10Folder -Path "$deviceCollectionPath\$configurationCollectionFolder"
 New-ConfigurationFolder -Name $server2016Folder -Path "$deviceCollectionPath\$configurationCollectionFolder"
 New-ConfigurationFolder -Name $server2019Folder -Path "$deviceCollectionPath\$configurationCollectionFolder"
 
-#Create Configuration Item Folders
+#Configuration Item Folders
 New-ConfigurationFolder -Name $configurationItemFolder -Path $configurationItemPath
 New-ConfigurationFolder -Name $windows10Folder -Path "$configurationItemPath\$configurationItemFolder"
 New-ConfigurationFolder -Name $server2016Folder -Path "$configurationItemPath\$configurationItemFolder"
 New-ConfigurationFolder -Name $server2019Folder -Path "$configurationItemPath\$configurationItemFolder"
 
+#Configuration baseline Folders
+New-ConfigurationFolder -Name $configurationBaselineFolder -Path $configurationBaselinePath
+New-ConfigurationFolder -Name $windows10Folder -Path "$configurationBaselinePath\$configurationBaselineFolder"
+New-ConfigurationFolder -Name $server2016Folder -Path "$configurationBaselinePath\$configurationBaselineFolder"
+New-ConfigurationFolder -Name $server2019Folder -Path "$configurationBaselinePath\$configurationBaselineFolder"
+
+#Create disa classification folders
 New-ConfigurationFolder -Name $cat1 -Path $CIWin10Path
 New-ConfigurationFolder -Name $classified -Path $CIWin10Path
 New-ConfigurationFolder -Name $public -Path $CIWin10Path
@@ -116,7 +123,6 @@ New-ConfigurationFolder -Name $public -Path $CIServer2019Path
 New-ConfigurationFolder -Name $sensitive -Path $CIServer2019Path
 New-ConfigurationFolder -Name $slowRules -Path $CIServer2019Path
 
-#Create configuration baseline Folders
 New-ConfigurationFolder -Name $cat1 -Path $CBWin10Path
 New-ConfigurationFolder -Name $classified -Path $CBWin10Path
 New-ConfigurationFolder -Name $public -Path $CBWin10Path
@@ -138,7 +144,6 @@ New-ConfigurationFolder -Name $slowRules -Path $CBServer2019Path
 
 #Create Configuration Collection
 <#
-#Create Collection
 $win10collectionName = "CI - All Windows 10 Clients"
 $server2016collectionName = "CI - All Server 2016 Clients"
 $server2019collectionName = "CI - All Server 2019 Clients"
@@ -170,7 +175,7 @@ $win10Baseline = 'Windows 10*'
 $server2016Baseline = 'Windows Server 2016*'
 $server2019Baseline = 'Windows Server 2019*'
 
-$CIInputObjects = (Get-CMConfigurationItem -Name $stigConfigurationItems -Fast)
+$CIInputObjects = (Get-CMConfigurationItem -Name $stigConfigurationItems.DisplayLocalizedName -Fast)
 $win10CBInputObjects = (Get-CMBaseline -Name $win10Baseline)
 $server2016CBInputObjects = (Get-CMBaseline -Name $server2016Baseline)
 $server2019CBInputObjects = (Get-CMBaseline -Name $server2019Baseline)

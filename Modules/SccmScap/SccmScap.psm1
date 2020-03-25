@@ -267,3 +267,60 @@ function New-ConfigurationDeployment
 
         New-CMBaselineDeployment -BaselineName $BaselineName -CollectionName $CollectionName -GenerateAlert $True -MonitoredByScom $True -ParameterValue $ParameterValue -PostponeDateTime $PostponeDateTime -Schedule $schedule | Out-Null
 }
+
+<#
+.Synopsis
+   Remove configuration baseline in System Center Configuration Manager
+.DESCRIPTION
+   This function gets configuration baselines and stores it in an array and removes it.
+.EXAMPLE
+    $cmConfigurationBaselines = 'Windows*'
+    Remove-ConfigurationBaseline -Name $cmConfigurationBaselines
+#>
+function Remove-ConfigurationBaseline
+{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter()]
+        [string]
+        $Name
+   )
+
+    $cmConfigurationBaselines = Get-CMBaseline -Name $Name
+
+    foreach ($cmConfigurationBaseline in $cmConfigurationBaselines)
+    {
+        Remove-CMBaseline -Name $cmConfigurationBaseline.LocalizedDisplayName -Force
+        Write-Verbose -Verbose "Removing $($cmConfigurationBaseline.LocalizedDisplayName) configuration baseline."
+    }
+}
+
+<#
+.Synopsis
+   Remove configuration items in System Center Configuration Manager
+.DESCRIPTION
+   This function gets configuration items and stores it in an array then remove them.
+.EXAMPLE
+    $cmConfigurationItems = 'oval.mil.disa*'
+    Remove-ConfigurationItem -Name $cmConfigurationItems
+#>
+function Remove-ConfigurationItem
+{
+    [CmdletBinding()]
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]
+        $Name
+   )
+
+    $cmConfigurationItems = Get-CMConfigurationItem -Name $Name -Fast
+
+    foreach ($cmConfigurationItem in $cmConfigurationItems)
+    {
+        Remove-CMConfigurationItem -Name $cmConfigurationItem.LocalizedDisplayName -Force
+        Write-Verbose -Verbose "Removing $($cmConfigurationItem.LocalizedDisplayName) configuration item."
+    }
+}
+
