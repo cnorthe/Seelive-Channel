@@ -61,6 +61,22 @@ $win10ImportFolder = 'C:\temp\SCAP2Convert\Windows10'
 $server2016ImportFolder = 'C:\temp\SCAP2Convert\Server2016'
 $server2019ImportFolder = 'C:\temp\SCAP2Convert\Server2019'
 
+#Location for Log files
+$logs = 'C:\Temp\SCAP2DCM_Logs'
+
+#Disa Stig Profile
+$stigProfileCat1 = 'xccdf_mil.disa.stig_profile_CAT_I_Only'
+$stigProfileSlowRules = 'xccdf_mil.disa.stig_profile_Disable_Slow_Rules'
+$stigProfileMac3Classified = 'xccdf_mil.disa.stig_profile_MAC-3_Classified'
+$stigProfileMac3Sensitive = 'xccdf_mil.disa.stig_profile_MAC-3_Sensitive'
+$stigProfileMac3Public = 'xccdf_mil.disa.stig_profile_MAC-3_Public'
+$stigProfileMac2Classified = 'xccdf_mil.disa.stig_profile_MAC-2_Classified'
+$stigProfileMac2Sensitive = 'xccdf_mil.disa.stig_profile_MAC-2_Sensitive'
+$stigProfileMac2Public = 'xccdf_mil.disa.stig_profile_MAC-2_Public'
+$stigProfileMac1Classified = 'xccdf_mil.disa.stig_profile_MAC-1_Classified'
+$stigProfileMac1Sensitive = 'xccdf_mil.disa.stig_profile_MAC-1_Sensitive'
+$stigProfileMac1Public = 'xccdf_mil.disa.stig_profile_MAC-1_Public'
+
 #Stig configuration items and baselines data
 $stigConfigurationItems = 'oval.mil.disa*'
 $win10Baselines = 'Windows 10*'
@@ -79,43 +95,43 @@ $server2019CollectionInputObjects = (Get-CMCollection -Name $server2019collectio
 
 #Start Workflow Process
 #Convert Windows 10 Scap Benchmarks to Cabs
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\CAT1' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_CAT_I_Only" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_CAT_I_Only.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\SlowRules' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_Disable_Slow_Rules" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_Disable_Slow_Rules.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Classified' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-3_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-3_Classified.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Sensitive' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-3_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-3_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Public' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-3_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-3_Public.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Classified' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-2_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-2_Classified.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Sensitive' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-2_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-2_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Public' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-2_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-2_Public.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Classified' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-1_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-1_Classified.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Sensitive' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-1_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-1_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile 'C:\Temp\SCAP2Convert\Windows10\Public' -Select "$windows10Stig/xccdf_mil.disa.stig_profile_MAC-1_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Windows10_MAC-1_Public.log'
+Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile "$win10ImportFolder\$cat1" -Select "$windows10Stig/$stigProfileCat1" -LogFile "$logs\Windows10_CAT_I_Only.log"
+Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile "$win10ImportFolder\$slowRules" -Select "$windows10Stig/$stigProfileSlowRules" -LogFile "$logs\Windows10_Disable_Slow_Rules.log"
+Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile "$win10ImportFolder\$classified" -Select "$windows10Stig/$stigProfileMac3Classified" -LogFile "$logs\Windows10_MAC-3_Classified.log"
+Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile "$win10ImportFolder\$sensitive" -Select "$windows10Stig/$stigProfileMac3Sensitive" -LogFile "$logs\Windows10_MAC-3_Sensitive.log"
+Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile "$win10ImportFolder\$public" -Select "$windows10Stig/$stigProfileMac3Public" -LogFile "$logs\Windows10_MAC-3_Public.log"
+Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile "$win10ImportFolder\$classified" -Select "$windows10Stig/$stigProfileMac2Classified" -LogFile "$logs\Windows10_MAC-2_Classified.log"
+Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile "$win10ImportFolder\$sensitive" -Select "$windows10Stig/$stigProfileMac2Sensitive" -LogFile "$logs\Windows10_MAC-2_Sensitive.log"
+Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile "$win10ImportFolder\$public" -Select "$windows10Stig/$stigProfileMac2Public" -LogFile "$logs\Windows10_MAC-2_Public.log"
+Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile "$win10ImportFolder\$classified" -Select "$windows10Stig/$stigProfileMac1Classified" -LogFile "$logs\Windows10_MAC-1_Classified.log"
+Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile "$win10ImportFolder\$sensitive" -Select "$windows10Stig/$stigProfileMac1Sensitive" -LogFile "$logs\Windows10_MAC-1_Sensitive.log"
+Convert-Scap2Cab  -ScapXml $windows10Scap -OutputFile "$win10ImportFolder\$public" -Select "$windows10Stig/$stigProfileMac1Public" -LogFile "$logs\Windows10_MAC-1_Public.log"
 
 #Convert Server 2016 Scap Benchmarks to Cabs
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\CAT1' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_CAT_I_Only" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_CAT_I_Only.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\SlowRules' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_Disable_Slow_Rules" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_Disable_Slow_Rules.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Classified' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-3_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-3_Classified.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Sensitive' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-3_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-3_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Public' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-3_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-3_Public.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Classified' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-2_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-2_Classified.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Sensitive' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-2_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-2_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Public' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-2_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-2_Public.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Classified' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-1_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-1_Classified.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Sensitive' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-1_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-1_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2016\Public' -Select "$server2016Stig/xccdf_mil.disa.stig_profile_MAC-1_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2016_MAC-1_Public.log'
+Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile "$server2016ImportFolder\$cat1" -Select "$server2016Stig/$stigProfileCat1" -LogFile "$logs\Server2016_CAT_I_Only.log"
+Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile "$server2016ImportFolder\$slowRules" -Select "$server2016Stig/$stigProfileSlowRules" -LogFile "$logs\Server2016_Disable_Slow_Rules.log"
+Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile "$server2016ImportFolder\$classified" -Select "$server2016Stig/$stigProfileMac3Classified" -LogFile "$logs\Server2016_MAC-3_Classified.log"
+Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile "$server2016ImportFolder\$sensitive" -Select "$server2016Stig/$stigProfileMac3Sensitive" -LogFile "$logs\Server2016_MAC-3_Sensitive.log"
+Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile "$server2016ImportFolder\$public" -Select "$server2016Stig/$stigProfileMac3Public" -LogFile "$logs\Server2016_MAC-3_Public.log"
+Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile "$server2016ImportFolder\$classified" -Select "$server2016Stig/$stigProfileMac2Classified" -LogFile "$logs\Server2016_MAC-2_Classified.log"
+Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile "$server2016ImportFolder\$sensitive" -Select "$server2016Stig/$stigProfileMac2Sensitive" -LogFile "$logs\Server2016_MAC-2_Sensitive.log"
+Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile "$server2016ImportFolder\$public" -Select "$server2016Stig/$stigProfileMac2Public" -LogFile "$logs\Server2016_MAC-2_Public.log"
+Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile "$server2016ImportFolder\$classified" -Select "$server2016Stig/$stigProfileMac1Classified" -LogFile "$logs\Server2016_MAC-1_Classified.log"
+Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile "$server2016ImportFolder\$sensitive" -Select "$server2016Stig/$stigProfileMac1Sensitive" -LogFile "$logs\Server2016_MAC-1_Sensitive.log"
+Convert-Scap2Cab  -ScapXml $Server2016Scap -OutputFile "$server2016ImportFolder\$public" -Select "$server2016Stig/$stigProfileMac1Public" -LogFile "$logs\Server2016_MAC-1_Public.log"
 
 #Convert Server 2019 Scap Benchmarks to Cabs
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\CAT1' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_CAT_I_Only" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_CAT_I_Only.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\SlowRules' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_Disable_Slow_Rules" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_Disable_Slow_Rules.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Classified' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-3_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-3_Classified.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Sensitive' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-3_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-3_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Public' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-3_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-3_Public.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Classified' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-2_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-2_Classified.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Sensitive' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-2_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-2_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Public' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-2_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-2_Public.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Classified' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-1_Classified" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-1_Classified.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Sensitive' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-1_Sensitive" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-1_Sensitive.log'
-Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile 'C:\Temp\SCAP2Convert\Server2019\Public' -Select "$server2019Stig/xccdf_mil.disa.stig_profile_MAC-1_Public" -LogFile 'C:\Temp\SCAP2DCM_Logs\SCAP2DCM_Server2019_MAC-1_Public.log'
+Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile "$server2019ImportFolder\$cat1" -Select "$server2019Stig/$stigProfileCat1" -LogFile "$logs\Server2019_CAT_I_Only.log"
+Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile "$server2019ImportFolder\$slowRules" -Select "$server2019Stig/$stigProfileSlowRules" -LogFile "$logs\Server2019_Disable_Slow_Rules.log"
+Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile "$server2019ImportFolder\$classified" -Select "$server2019Stig/$stigProfileMac3Classified" -LogFile "$logs\Server2019_MAC-3_Classified.log"
+Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile "$server2019ImportFolder\$sensitive" -Select "$server2019Stig/$stigProfileMac3Sensitive" -LogFile "$logs\Server2019_MAC-3_Sensitive.log"
+Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile "$server2019ImportFolder\$public" -Select "$server2019Stig/$stigProfileMac3Public" -LogFile "$logs\Server2019_MAC-3_Public.log"
+Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile "$server2019ImportFolder\$classified" -Select "$server2019Stig/$stigProfileMac2Classified" -LogFile "$logs\Server2019_MAC-2_Classified.log"
+Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile "$server2019ImportFolder\$sensitive" -Select "$server2019Stig/$stigProfileMac2Sensitive" -LogFile "$logs\Server2019_MAC-2_Sensitive.log"
+Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile "$server2019ImportFolder\$public" -Select "$server2019Stig/$stigProfileMac2Public" -LogFile "$logs\Server2019_MAC-2_Public.log"
+Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile "$server2019ImportFolder\$classified" -Select "$server2019Stig/$stigProfileMac1Classified" -LogFile "$logs\Server2019_MAC-1_Classified.log"
+Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile "$server2019ImportFolder\$sensitive" -Select "$server2019Stig/$stigProfileMac1Sensitive" -LogFile "$logs\Server2019_MAC-1_Sensitive.log"
+Convert-Scap2Cab  -ScapXml $server2019Scap -OutputFile "$server2019ImportFolder\$public" -Select "$server2019Stig/$stigProfileMac1Public" -LogFile "$logs\Server2019_MAC-1_Public.log"
 
 #Create Configuration Collection Folders
 New-ConfigurationFolder -Name $configurationCollectionFolder -Path $deviceCollectionPath

@@ -13,10 +13,6 @@ function New-ConfigurationDeployment
     [CmdletBinding()]
     Param
     (
-        [Parameter(Mandatory=$true)]
-        [string]
-        $BaselineName,
-
         [Parameter()]
         [string]
         $CollectionName,
@@ -24,6 +20,10 @@ function New-ConfigurationDeployment
         [Parameter()]
         [boolean]
         $EnableEnforcement,
+
+        [Parameter()]
+        [string]
+        $Name,
 
         [Parameter()]
         [int]
@@ -34,16 +34,18 @@ function New-ConfigurationDeployment
         $PostponeDateTime = 2020/03/01
     )
 
-        $schedule = New-CMSchedule -RecurCount 1 -RecurInterval Days
+    $schedule = New-CMSchedule -RecurCount 1 -RecurInterval Days
 
-        New-CMBaselineDeployment -BaselineName $BaselineName -CollectionName $CollectionName -GenerateAlert $True -MonitoredByScom $True -ParameterValue $ParameterValue -PostponeDateTime $PostponeDateTime -Schedule $schedule | Out-Null
-}
-
-$cmBaselineNames = Get-CMBaseline -Name 'Windows*'
-$collectionName = 'Test All Windows 10 Clients'
+    $cmBaselineNames = Get-CMBaseline -Name $Name
 
     foreach ($cmBaselineName in $cmBaselineNames)
     {
-        New-ConfigurationDeployment -BaselineName $cmBaselineName.LocalizedDisplayName -CollectionName $collectionName -ParameterValue 50 -PostponeDateTime 2019/03/01    
+        New-CMBaselineDeployment -Name $cmBaselineName.LocalizedDisplayName -CollectionName $CollectionName -GenerateAlert $True -MonitoredByScom $True -ParameterValue $ParameterValue -PostponeDateTime $PostponeDateTime -Schedule $schedule | Out-Null
         Write-Verbose -Verbose "Creating $($cmBaselineName.LocalizedDisplayName) Baseline Deployment."
     }
+}
+
+$cmBaselineNames = 'Windows 10*'
+$collectionName = "CI - All Windows 10 Clients"
+
+New-ConfigurationDeployment -Name $cmBaselineNames -CollectionName $collectionName -PostponeDateTime 2019/03/01

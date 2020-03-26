@@ -272,19 +272,15 @@ function Move-ConfigurationBaseline
 .DESCRIPTION
    This function creates configuration baseline deployments in System Center Configuration Manager
 .EXAMPLE
-    $cmBaselineName = 'Baseline Name'
-    $collectionName = 'All Windows 10 Clients'
-    New-ConfigurationDeployment -BaselineName $cmBaselineName -CollectionName $collectionName -ParameterValue 90 -PostponeDateTime 2020/03/01
+   $cmBaselineName = 'Baseline Name'
+   $collectionName = 'All Windows 10 Clients'
+   New-ConfigurationDeployment -Name $cmBaselineNames -CollectionName $collectionName -PostponeDateTime 2019/03/01
 #>
 function New-ConfigurationDeployment
 {
     [CmdletBinding()]
     Param
     (
-        [Parameter(Mandatory=$true)]
-        [string]
-        $BaselineName,
-
         [Parameter()]
         [string]
         $CollectionName,
@@ -292,6 +288,10 @@ function New-ConfigurationDeployment
         [Parameter()]
         [boolean]
         $EnableEnforcement,
+
+        [Parameter()]
+        [string]
+        $Name,
 
         [Parameter()]
         [int]
@@ -302,9 +302,15 @@ function New-ConfigurationDeployment
         $PostponeDateTime = 2020/03/01
     )
 
-        $schedule = New-CMSchedule -RecurCount 1 -RecurInterval Days
+    $schedule = New-CMSchedule -RecurCount 1 -RecurInterval Days
 
-        New-CMBaselineDeployment -BaselineName $BaselineName -CollectionName $CollectionName -GenerateAlert $True -MonitoredByScom $True -ParameterValue $ParameterValue -PostponeDateTime $PostponeDateTime -Schedule $schedule | Out-Null
+    $cmBaselineNames = Get-CMBaseline -Name $Name
+
+    foreach ($cmBaselineName in $cmBaselineNames)
+    {
+        New-CMBaselineDeployment -Name $cmBaselineName.LocalizedDisplayName -CollectionName $CollectionName -GenerateAlert $True -MonitoredByScom $True -ParameterValue $ParameterValue -PostponeDateTime $PostponeDateTime -Schedule $schedule | Out-Null
+        Write-Verbose -Verbose "Creating $($cmBaselineName.LocalizedDisplayName) Baseline Deployment."
+    }
 }
 
 <#
@@ -362,4 +368,3 @@ function Remove-ConfigurationItem
         Write-Verbose -Verbose "Removing $($cmConfigurationItem.LocalizedDisplayName) configuration item."
     }
 }
-
