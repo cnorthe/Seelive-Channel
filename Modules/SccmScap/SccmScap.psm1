@@ -1,3 +1,12 @@
+function Import-SCCMPoSHModule
+{
+    #Load Configuration Manager PowerShell Module
+    Import-module ($Env:SMS_ADMIN_UI_PATH.Substring(0,$Env:SMS_ADMIN_UI_PATH.Length-5) + '\ConfigurationManager.psd1')
+
+    #Get SiteCode
+    $SiteCode = Get-PSDrive -PSProvider CMSITE
+    Set-location $SiteCode":"
+}
 
 <#
 .Synopsis
@@ -34,17 +43,6 @@ function Convert-Scap2Cab
     & $ScapToDcmPath -Scap $ScapXml -Out $OutPutFile -Select $Select -MaxCi $MaxCi -Log $LogFile
  }
 
-
-function Import-SCCMPoSHModule
-{
-    #Load Configuration Manager PowerShell Module
-    Import-module ($Env:SMS_ADMIN_UI_PATH.Substring(0,$Env:SMS_ADMIN_UI_PATH.Length-5) + '\ConfigurationManager.psd1')
-
-    #Get SiteCode
-    $SiteCode = Get-PSDrive -PSProvider CMSITE
-    Set-location $SiteCode":"
-}
-
 <#
 .Synopsis
    Creates folders in System Center Configuration Manager
@@ -69,6 +67,37 @@ function New-ConfigurationFolder
 
     New-Item -Name $Name -Path $Path -Force
     Write-Verbose -Verbose "Creating $($Name) folder in $($Path)."
+}
+
+<#
+.Synopsis
+   Import Scap configuration items and baselines in System Center Configuration Manager
+.DESCRIPTION
+   This function imports Scap configuration items and baselines in System Center
+   Configuration Manager
+.EXAMPLE
+    $ImportFolder = 'C:\temp\SCAP2Convert'
+    Import-SCAPBaseline -Path "$ImportFolder\Windows10"
+    Import-SCAPBaseline -Path "$ImportFolder\Server2016"
+    Import-SCAPBaseline -Path "$ImportFolder\Server2019"
+#>
+function Import-ScapBaseline
+{
+    [cmdletbinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]
+        $Path
+    )
+
+    $files = Get-ChildItem -Path $Path -File -Recurse -Include *.Cab
+
+    foreach ($file in $files)
+    {
+        Import-CMBaseline -FileName $file.FullName -Force
+        Write-Verbose -Verbose "$($file.Name) SCAP Baseline and Configuration Items imported successfully."
+    }
 }
 
 <#
@@ -114,38 +143,48 @@ function New-ConfigurationCollection
     $schedule = New-CMSchedule –RecurInterval Days –RecurCount 2
 
     New-CMDeviceCollection -Name $CollectionName -Comment $Comment -LimitingCollectionName $LimitingCollectionName -RefreshSchedule $Schedule -RefreshType 2 | Out-Null
+
     Add-CMDeviceCollectionQueryMembershipRule -CollectionName $CollectionName -QueryExpression $QueryExpression -RuleName $RuleName
+
     Write-Verbose -Verbose "Creating $($CollectionName) Collection."
 }
 
 <#
 .Synopsis
-   Import Scap configuration items and baselines in System Center Configuration Manager
+   Move CM Collections in System Center Configuration Manager
 .DESCRIPTION
-   This function imports Scap configuration items and baselines in System Center
-   Configuration Manager
+   This function gets CM Collection and stores it in an array then move them
+   to specified folder path.
 .EXAMPLE
-    $ImportFolder = 'C:\temp\SCAP2Convert'
-    Import-SCAPBaseline -Path "$ImportFolder\Windows10"
-    Import-SCAPBaseline -Path "$ImportFolder\Server2016"
-    Import-SCAPBaseline -Path "$ImportFolder\Server2019"
+   $serverCollection = 'All Windows Server 2016*'
+   $serverFolderPath = $($SiteCode.Name+":\DeviceCollection\Configuration Items\CI - Server Collections")
+   $serverInputObjects = (Get-CMCollection -Name $serverCollection)
+   Move-ConfigurationCollection -Name $serverCollection -FolderPath $serverFolderPath -InputObject $serverInputObjects
 #>
-function Import-ScapBaseline
+function Move-ConfigurationCollection
 {
-    [cmdletbinding()]
-    param
+    [CmdletBinding()]
+    Param
     (
         [Parameter(Mandatory = $true)]
         [string]
-        $Path
+        $Name,
+
+        [Parameter(Mandatory = $true)]
+        [string]
+        $FolderPath,
+
+        [Parameter(Mandatory = $true)]
+        [system.array]
+        $InputObject
     )
 
-    $files = Get-ChildItem -Path $Path -File -Recurse -Include *.Cab
+    $cmDeviceCollections = Get-CMDeviceCollection  -Name $Name
 
-    foreach ($file in $files)
+    foreach ($cmDeviceCollection in $cmDeviceCollections)
     {
-        Import-CMBaseline -FileName $file.FullName -Force
-        Write-Verbose -Verbose "$($file.Name) SCAP Baseline and Configuration Items imported successfully."
+        Move-CMObject -FolderPath $FolderPath -InputObject $InputObject
+        Write-Verbose -Verbose "Moving $($cmDeviceCollection.Name) collection in $($FolderPath)."
     }
 }
 
