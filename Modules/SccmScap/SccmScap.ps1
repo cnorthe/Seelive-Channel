@@ -43,18 +43,19 @@ $CBServer2016Path = "$configurationBaselinePath\$configurationBaselineFolder\$se
 $CBServer2019Path = "$configurationBaselinePath\$configurationBaselineFolder\$server2019Folder"
 
 #Configuration Collections
-$win10collectionName = "CI - All Windows 10 Clients"
-$server2016collectionName = "CI - All Server 2016 Clients"
-$server2019collectionName = "CI - All Server 2019 Clients"
-$win10queryExpression = "select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System where SMS_R_System.OperatingSystemNameandVersion like '%Workstation 10.0%' and SMS_R_System.Client = '1'"
-$server2016queryExpression = "select SMS_R_System.ResourceId, SMS_R_System.ResourceType, SMS_R_System.Name, SMS_R_System.SMSUniqueIdentifier, SMS_R_System.ResourceDomainORWorkgroup, SMS_R_System.Client from  SMS_R_System inner join SMS_G_System_OPERATING_SYSTEM on SMS_G_System_OPERATING_SYSTEM.ResourceID = SMS_R_System.ResourceId where SMS_R_System.OperatingSystemNameandVersion like '%Server 10.0%' and SMS_G_System_OPERATING_SYSTEM.Caption like '%Server 2016%' and SMS_R_System.Client = '1'"
-$server2019queryExpression = "select SMS_R_System.ResourceId, SMS_R_System.ResourceType, SMS_R_System.Name, SMS_R_System.SMSUniqueIdentifier, SMS_R_System.ResourceDomainORWorkgroup, SMS_R_System.Client from  SMS_R_System inner join SMS_G_System_OPERATING_SYSTEM on SMS_G_System_OPERATING_SYSTEM.ResourceID = SMS_R_System.ResourceId where SMS_R_System.OperatingSystemNameandVersion like '%Server 10.0%' and SMS_G_System_OPERATING_SYSTEM.Caption like '%Server 2019%' and SMS_R_System.Client = '1'"
-$win10ruleName = $win10collectionName
-$win10comment = $win10collectionName
-$server2016ruleName = $server2016collectionName
-$server2016comment = $server2016collectionName
-$server2019ruleName = $server2019collectionName
-$server2019comment = $server2019collectionName
+$win10CollectionName = "CI - All Windows 10 Clients"
+$server2016CollectionName = "CI - All Server 2016 Clients"
+$server2019CollectionName = "CI - All Server 2019 Clients"
+$limitingCollectionName = 'All Systems'
+$win10QueryExpression = "select SMS_R_SYSTEM.ResourceID,SMS_R_SYSTEM.ResourceType,SMS_R_SYSTEM.Name,SMS_R_SYSTEM.SMSUniqueIdentifier,SMS_R_SYSTEM.ResourceDomainORWorkgroup,SMS_R_SYSTEM.Client from SMS_R_System where SMS_R_System.OperatingSystemNameandVersion like '%Workstation 10.0%' and SMS_R_System.Client = '1'"
+$server2016QueryExpression = "select SMS_R_System.ResourceId, SMS_R_System.ResourceType, SMS_R_System.Name, SMS_R_System.SMSUniqueIdentifier, SMS_R_System.ResourceDomainORWorkgroup, SMS_R_System.Client from  SMS_R_System inner join SMS_G_System_OPERATING_SYSTEM on SMS_G_System_OPERATING_SYSTEM.ResourceID = SMS_R_System.ResourceId where SMS_R_System.OperatingSystemNameandVersion like '%Server 10.0%' and SMS_G_System_OPERATING_SYSTEM.Caption like '%Server 2016%' and SMS_R_System.Client = '1'"
+$server2019QueryExpression = "select SMS_R_System.ResourceId, SMS_R_System.ResourceType, SMS_R_System.Name, SMS_R_System.SMSUniqueIdentifier, SMS_R_System.ResourceDomainORWorkgroup, SMS_R_System.Client from  SMS_R_System inner join SMS_G_System_OPERATING_SYSTEM on SMS_G_System_OPERATING_SYSTEM.ResourceID = SMS_R_System.ResourceId where SMS_R_System.OperatingSystemNameandVersion like '%Server 10.0%' and SMS_G_System_OPERATING_SYSTEM.Caption like '%Server 2019%' and SMS_R_System.Client = '1'"
+$win10RuleName = $win10CollectionName
+$win10Comment = $win10CollectionName
+$server2016RuleName = $server2016CollectionName
+$server2016Comment = $server2016CollectionName
+$server2019RuleName = $server2019CollectionName
+$server2019Comment = $server2019CollectionName
 
 #Location for SCAP CAB Benchmarks
 $win10ImportFolder = 'C:\temp\SCAP2Convert\Windows10'
@@ -88,9 +89,12 @@ $CIInputObjects = (Get-CMConfigurationItem -Name $stigConfigurationItems -Fast)
 $win10CBInputObjects = (Get-CMBaseline -Name $win10Baselines)
 $server2016CBInputObjects = (Get-CMBaseline -Name $server2016Baseline)
 $server2019CBInputObjects = (Get-CMBaseline -Name $server2019Baseline)
-$win10CollectionInputObjects = (Get-CMCollection -Name $win10collectionName)
-$server2016CollectionInputObjects = (Get-CMCollection -Name $server2016collectionName)
-$server2019CollectionInputObjects = (Get-CMCollection -Name $server2019collectionName)
+$win10CollectionInputObjects = (Get-CMCollection -Name $win10CollectionName)
+$server2016CollectionInputObjects = (Get-CMCollection -Name $server2016CollectionName)
+$server2019CollectionInputObjects = (Get-CMCollection -Name $server2019CollectionName)
+
+#Deployment postpone date & time
+$postponeDateTime = 2020/03/01
 
 
 #Start Workflow Process
@@ -189,14 +193,14 @@ New-ConfigurationFolder -Name $sensitive -Path $CBServer2019Path
 New-ConfigurationFolder -Name $slowRules -Path $CBServer2019Path
 
 #Create Configuration Collections
-New-ConfigurationCollection -CollectionName $win10collectionName -Comment $win10comment -LimitingCollectionName 'All Systems' -QueryExpression $win10queryExpression -RuleName $win10ruleName
-New-ConfigurationCollection -CollectionName $server2016collectionName -Comment $server2016comment -LimitingCollectionName 'All Systems' -QueryExpression $server2016queryExpression -RuleName $server2016ruleName
-New-ConfigurationCollection -CollectionName $server2019collectionName -Comment $server2019comment -LimitingCollectionName 'All Systems' -QueryExpression $server2019queryExpression -RuleName $server2019ruleName
+New-ConfigurationCollection -CollectionName $win10CollectionName -Comment $win10Comment -LimitingCollectionName $limitingCollectionName -QueryExpression $win10QueryExpression -RuleName $win10RuleName
+New-ConfigurationCollection -CollectionName $server2016CollectionName -Comment $server2016Comment -LimitingCollectionName $limitingCollectionName -QueryExpression $server2016QueryExpression -RuleName $server2016RuleName
+New-ConfigurationCollection -CollectionName $server2019CollectionName -Comment $server2019Comment -LimitingCollectionName $limitingCollectionName -QueryExpression $server2019QueryExpression -RuleName $server2019RuleName
 
 #Move Configuration Collections
-Move-ConfigurationCollection -Name $win10collectionName -FolderPath "$deviceCollectionPath\$configurationCollectionFolder\$windows10Folder" -InputObject $win10CollectionInputObjects
-Move-ConfigurationCollection -Name $server2016collectionName -FolderPath "$deviceCollectionPath\$configurationCollectionFolder\$server2016Folder" -InputObject $server2016CollectionInputObjects
-Move-ConfigurationCollection -Name $server2019collectionName -FolderPath "$deviceCollectionPath\$configurationCollectionFolder\$server2019Folder" -InputObject $server2019CollectionInputObjects
+Move-ConfigurationCollection -Name $win10CollectionName -FolderPath "$deviceCollectionPath\$configurationCollectionFolder\$windows10Folder" -InputObject $win10CollectionInputObjects
+Move-ConfigurationCollection -Name $server2016CollectionName -FolderPath "$deviceCollectionPath\$configurationCollectionFolder\$server2016Folder" -InputObject $server2016CollectionInputObjects
+Move-ConfigurationCollection -Name $server2019CollectionName -FolderPath "$deviceCollectionPath\$configurationCollectionFolder\$server2019Folder" -InputObject $server2019CollectionInputObjects
 
 
 #Import Scap Baseline
@@ -204,9 +208,10 @@ Move-ConfigurationCollection -Name $server2019collectionName -FolderPath "$devic
 Import-SCAPBaseline -Path "$win10ImportFolder\$cat1"
 Move-ConfigurationItem -Name $stigConfigurationItems -FolderPath "$CIWin10Path\$cat1" -InputObject $CIInputObjects
 Move-ConfigurationBaseline -Name $win10Baselines -FolderPath "$CBWin10Path\$cat1"-InputObject $win10CBInputObjects
+New-ConfigurationDeployment -Name $win10Baselines -CollectionName $win10CollectionName -PostponeDateTime $postponeDateTime
 
-    foreach ($win10Baseline in $win10Baselines)
-    {
-        New-ConfigurationDeployment -BaselineName $win10Baseline.LocalizedDisplayName -CollectionName $win10collectionName -ParameterValue 90 -PostponeDateTime 2019/03/01    
-        Write-Verbose -Verbose "Creating $($win10Baseline.LocalizedDisplayName) Baseline Deployment."
-    }
+#Process and deploy Windows 10 Classified stig data
+Import-SCAPBaseline -Path "$win10ImportFolder\$classified"
+Move-ConfigurationItem -Name $stigConfigurationItems -FolderPath "$CIWin10Path\$classified" -InputObject $CIInputObjects
+Move-ConfigurationBaseline -Name $win10Baselines -FolderPath "$CBWin10Path\$classified"-InputObject $win10CBInputObjects
+New-ConfigurationDeployment -Name $win10Baselines -CollectionName $win10CollectionName -PostponeDateTime $postponeDateTime
