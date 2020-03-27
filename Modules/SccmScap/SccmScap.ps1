@@ -215,3 +215,22 @@ Import-SCAPBaseline -Path "$win10ImportFolder\$classified"
 Move-ConfigurationItem -Name $stigConfigurationItems -FolderPath "$CIWin10Path\$classified" -InputObject $CIInputObjects
 Move-ConfigurationBaseline -Name $win10Baselines -FolderPath "$CBWin10Path\$classified"-InputObject $win10CBInputObjects
 New-ConfigurationDeployment -Name $win10Baselines -CollectionName $win10CollectionName -PostponeDateTime $postponeDateTime
+
+#-----
+#Process and deploy Windows 10 Public stig data
+Import-SCAPBaseline -Path "$win10ImportFolder\$public"
+Move-ConfigurationItem -Name $stigConfigurationItems -FolderPath "$CIWin10Path\$public" -InputObject $CIInputObjects
+Move-ConfigurationBaseline -Name $win10Baselines -FolderPath "$CBWin10Path\$public"-InputObject $win10CBInputObjects
+New-ConfigurationDeployment -Name $win10Baselines -CollectionName $win10CollectionName -PostponeDateTime $postponeDateTime
+
+#Process and deploy Windows 10 Sensitive stig data
+Import-SCAPBaseline -Path "$win10ImportFolder\$sensitive"
+Move-ConfigurationItem -Name $stigConfigurationItems -FolderPath "$CIWin10Path\$sensitive" -InputObject $CIInputObjects
+Move-ConfigurationBaseline -Name $win10Baselines -FolderPath "$CBWin10Path\$sensitive"-InputObject $win10CBInputObjects
+New-ConfigurationDeployment -Name $win10Baselines -CollectionName $win10CollectionName -PostponeDateTime $postponeDateTime
+
+#Process and deploy Windows 10 Sensitive stig data
+Import-SCAPBaseline -Path "$win10ImportFolder\$slowRules"
+Move-ConfigurationItem -Name $stigConfigurationItems -FolderPath "$CIWin10Path\$slowRules" -InputObject $CIInputObjects
+Move-ConfigurationBaseline -Name $win10Baselines -FolderPath "$CBWin10Path\$slowRules"-InputObject $win10CBInputObjects
+New-ConfigurationDeployment -Name $win10Baselines -CollectionName $win10CollectionName -PostponeDateTime $postponeDateTime
