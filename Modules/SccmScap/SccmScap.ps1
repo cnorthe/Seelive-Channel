@@ -23,6 +23,7 @@ $configurationBaselinePath = $SiteCode.Name+":\ConfigurationBaseline"
 $configurationCollectionFolder = 'Configuration Collections'
 $configurationItemFolder = 'Configuration Items'
 $configurationBaselineFolder = 'Configuration Baselines'
+$disaStigItemsFolder = 'Disa Stig Items'
 $windows10Folder = 'CI - Windows 10'
 $server2016Folder ='CI - Server 2016'
 $server2019Folder ='CI - Server 2019'
@@ -33,9 +34,9 @@ $sensitive = 'Sensitive'
 $slowRules = 'SlowRules'
 
 #Configuration item catagory path
-$CIWin10Path = "$configurationItemPath\$configurationItemFolder\$windows10Folder"
-$CIServer2016Path = "$configurationItemPath\$configurationItemFolder\$server2016Folder"
-$CIServer2019Path = "$configurationItemPath\$configurationItemFolder\$server2019Folder"
+$disaStigItemsPath = "$configurationItemPath\$configurationItemFolder\$disaStigItemsFolder"
+#$CIServer2016Path = "$configurationItemPath\$configurationItemFolder\$server2016Folder"
+#$CIServer2019Path = "$configurationItemPath\$configurationItemFolder\$server2019Folder"
 
 #Configuration baseline catagory path
 $CBWin10Path = "$configurationBaselinePath\$configurationBaselineFolder\$windows10Folder"
@@ -58,6 +59,7 @@ $server2019RuleName = $server2019CollectionName
 $server2019Comment = $server2019CollectionName
 
 #Location for SCAP CAB Benchmarks
+$scapImportFolder = 'C:\temp\SCAP2Convert'
 $win10ImportFolder = 'C:\temp\SCAP2Convert\Windows10'
 $server2016ImportFolder = 'C:\temp\SCAP2Convert\Server2016'
 $server2019ImportFolder = 'C:\temp\SCAP2Convert\Server2019'
@@ -81,20 +83,20 @@ $stigProfileMac1Public = 'xccdf_mil.disa.stig_profile_MAC-1_Public'
 #Stig configuration items and baselines data
 $stigConfigurationItems = 'oval.mil.disa*'
 $win10Baselines = 'Windows 10*'
-$server2016Baseline = 'Windows Server 2016*'
-$server2019Baseline = 'Windows Server 2019*'
+$server2016Baselines = 'Windows Server 2016*'
+$server2019Baselines = 'Windows Server 2019*'
 
 #Configuration InputObjects
 $CIInputObjects = (Get-CMConfigurationItem -Name $stigConfigurationItems -Fast)
 $win10CBInputObjects = (Get-CMBaseline -Name $win10Baselines)
-$server2016CBInputObjects = (Get-CMBaseline -Name $server2016Baseline)
-$server2019CBInputObjects = (Get-CMBaseline -Name $server2019Baseline)
+$server2016CBInputObjects = (Get-CMBaseline -Name $server2016Baselines)
+$server2019CBInputObjects = (Get-CMBaseline -Name $server2019Baselines)
 $win10CollectionInputObjects = (Get-CMCollection -Name $win10CollectionName)
 $server2016CollectionInputObjects = (Get-CMCollection -Name $server2016CollectionName)
 $server2019CollectionInputObjects = (Get-CMCollection -Name $server2019CollectionName)
 
 #Deployment postpone date & time
-$postponeDateTime = 2020/03/01
+[int]$postponeDateTime = 2020/03/01
 
 
 #Start Workflow Process
@@ -143,55 +145,6 @@ New-ConfigurationFolder -Name $windows10Folder -Path "$deviceCollectionPath\$con
 New-ConfigurationFolder -Name $server2016Folder -Path "$deviceCollectionPath\$configurationCollectionFolder"
 New-ConfigurationFolder -Name $server2019Folder -Path "$deviceCollectionPath\$configurationCollectionFolder"
 
-#Create Configuration Item Folders
-New-ConfigurationFolder -Name $configurationItemFolder -Path $configurationItemPath
-New-ConfigurationFolder -Name $windows10Folder -Path "$configurationItemPath\$configurationItemFolder"
-New-ConfigurationFolder -Name $server2016Folder -Path "$configurationItemPath\$configurationItemFolder"
-New-ConfigurationFolder -Name $server2019Folder -Path "$configurationItemPath\$configurationItemFolder"
-
-#Create Configuration Baseline Folders
-New-ConfigurationFolder -Name $configurationBaselineFolder -Path $configurationBaselinePath
-New-ConfigurationFolder -Name $windows10Folder -Path "$configurationBaselinePath\$configurationBaselineFolder"
-New-ConfigurationFolder -Name $server2016Folder -Path "$configurationBaselinePath\$configurationBaselineFolder"
-New-ConfigurationFolder -Name $server2019Folder -Path "$configurationBaselinePath\$configurationBaselineFolder"
-
-#Create Disa Classification Folders
-New-ConfigurationFolder -Name $cat1 -Path $CIWin10Path
-New-ConfigurationFolder -Name $classified -Path $CIWin10Path
-New-ConfigurationFolder -Name $public -Path $CIWin10Path
-New-ConfigurationFolder -Name $sensitive -Path $CIWin10Path
-New-ConfigurationFolder -Name $slowRules -Path $CIWin10Path
-
-New-ConfigurationFolder -Name $cat1 -Path $CIServer2016Path
-New-ConfigurationFolder -Name $classified -Path $CIServer2016Path
-New-ConfigurationFolder -Name $public -Path $CIServer2016Path
-New-ConfigurationFolder -Name $sensitive -Path $CIServer2016Path
-New-ConfigurationFolder -Name $slowRules -Path $CIServer2016Path
-
-New-ConfigurationFolder -Name $cat1 -Path $CIServer2019Path
-New-ConfigurationFolder -Name $classified -Path $CIServer2019Path
-New-ConfigurationFolder -Name $public -Path $CIServer2019Path
-New-ConfigurationFolder -Name $sensitive -Path $CIServer2019Path
-New-ConfigurationFolder -Name $slowRules -Path $CIServer2019Path
-
-New-ConfigurationFolder -Name $cat1 -Path $CBWin10Path
-New-ConfigurationFolder -Name $classified -Path $CBWin10Path
-New-ConfigurationFolder -Name $public -Path $CBWin10Path
-New-ConfigurationFolder -Name $sensitive -Path $CBWin10Path
-New-ConfigurationFolder -Name $slowRules -Path $CBWin10Path
-
-New-ConfigurationFolder -Name $cat1 -Path $CBServer2016Path
-New-ConfigurationFolder -Name $classified -Path $CBServer2016Path
-New-ConfigurationFolder -Name $public -Path $CBServer2016Path
-New-ConfigurationFolder -Name $sensitive -Path $CBServer2016Path
-New-ConfigurationFolder -Name $slowRules -Path $CBServer2016Path
-
-New-ConfigurationFolder -Name $cat1 -Path $CBServer2019Path
-New-ConfigurationFolder -Name $classified -Path $CBServer2019Path
-New-ConfigurationFolder -Name $public -Path $CBServer2019Path
-New-ConfigurationFolder -Name $sensitive -Path $CBServer2019Path
-New-ConfigurationFolder -Name $slowRules -Path $CBServer2019Path
-
 #Create Configuration Collections
 New-ConfigurationCollection -CollectionName $win10CollectionName -Comment $win10Comment -LimitingCollectionName $limitingCollectionName -QueryExpression $win10QueryExpression -RuleName $win10RuleName
 New-ConfigurationCollection -CollectionName $server2016CollectionName -Comment $server2016Comment -LimitingCollectionName $limitingCollectionName -QueryExpression $server2016QueryExpression -RuleName $server2016RuleName
@@ -202,35 +155,26 @@ Move-ConfigurationCollection -Name $win10CollectionName -FolderPath "$deviceColl
 Move-ConfigurationCollection -Name $server2016CollectionName -FolderPath "$deviceCollectionPath\$configurationCollectionFolder\$server2016Folder" -InputObject $server2016CollectionInputObjects
 Move-ConfigurationCollection -Name $server2019CollectionName -FolderPath "$deviceCollectionPath\$configurationCollectionFolder\$server2019Folder" -InputObject $server2019CollectionInputObjects
 
+#Create Configuration Item Folders
+New-ConfigurationFolder -Name $configurationItemFolder -Path $configurationItemPath
+New-ConfigurationFolder -Name $disaStigItemsFolder -Path "$configurationItemPath\$configurationItemFolder"
+
+#Create Configuration Baseline Folders
+New-ConfigurationFolder -Name $configurationBaselineFolder -Path $configurationBaselinePath
+New-ConfigurationFolder -Name $windows10Folder -Path "$configurationBaselinePath\$configurationBaselineFolder"
+New-ConfigurationFolder -Name $server2016Folder -Path "$configurationBaselinePath\$configurationBaselineFolder"
+New-ConfigurationFolder -Name $server2019Folder -Path "$configurationBaselinePath\$configurationBaselineFolder"
+
 
 #Import Scap Baseline
-#Process and deploy Windows 10 CAT1 stig data
-Import-SCAPBaseline -Path "$win10ImportFolder\$cat1"
-Move-ConfigurationItem -Name $stigConfigurationItems -FolderPath "$CIWin10Path\$cat1" -InputObject $CIInputObjects
-Move-ConfigurationBaseline -Name $win10Baselines -FolderPath "$CBWin10Path\$cat1"-InputObject $win10CBInputObjects
-New-ConfigurationDeployment -Name $win10Baselines -CollectionName $win10CollectionName -PostponeDateTime $postponeDateTime
+#Import and move stig data in SCCM
+Import-SCAPBaseline -Path $scapImportFolder
+Move-ConfigurationItem -Name $stigConfigurationItems -FolderPath $disaStigItemsPath -InputObject $CIInputObjects
 
-#Process and deploy Windows 10 Classified stig data
-Import-SCAPBaseline -Path "$win10ImportFolder\$classified"
-Move-ConfigurationItem -Name $stigConfigurationItems -FolderPath "$CIWin10Path\$classified" -InputObject $CIInputObjects
-Move-ConfigurationBaseline -Name $win10Baselines -FolderPath "$CBWin10Path\$classified"-InputObject $win10CBInputObjects
+#Move Configuration Baselines and deploy
+Move-ConfigurationBaseline -Name $win10Baselines -FolderPath $CBWin10Path -InputObject $win10CBInputObjects
 New-ConfigurationDeployment -Name $win10Baselines -CollectionName $win10CollectionName -PostponeDateTime $postponeDateTime
-
-#-----
-#Process and deploy Windows 10 Public stig data
-Import-SCAPBaseline -Path "$win10ImportFolder\$public"
-Move-ConfigurationItem -Name $stigConfigurationItems -FolderPath "$CIWin10Path\$public" -InputObject $CIInputObjects
-Move-ConfigurationBaseline -Name $win10Baselines -FolderPath "$CBWin10Path\$public"-InputObject $win10CBInputObjects
-New-ConfigurationDeployment -Name $win10Baselines -CollectionName $win10CollectionName -PostponeDateTime $postponeDateTime
-
-#Process and deploy Windows 10 Sensitive stig data
-Import-SCAPBaseline -Path "$win10ImportFolder\$sensitive"
-Move-ConfigurationItem -Name $stigConfigurationItems -FolderPath "$CIWin10Path\$sensitive" -InputObject $CIInputObjects
-Move-ConfigurationBaseline -Name $win10Baselines -FolderPath "$CBWin10Path\$sensitive"-InputObject $win10CBInputObjects
-New-ConfigurationDeployment -Name $win10Baselines -CollectionName $win10CollectionName -PostponeDateTime $postponeDateTime
-
-#Process and deploy Windows 10 Sensitive stig data
-Import-SCAPBaseline -Path "$win10ImportFolder\$slowRules"
-Move-ConfigurationItem -Name $stigConfigurationItems -FolderPath "$CIWin10Path\$slowRules" -InputObject $CIInputObjects
-Move-ConfigurationBaseline -Name $win10Baselines -FolderPath "$CBWin10Path\$slowRules"-InputObject $win10CBInputObjects
-New-ConfigurationDeployment -Name $win10Baselines -CollectionName $win10CollectionName -PostponeDateTime $postponeDateTime
+Move-ConfigurationBaseline -Name $server2016Baselines -FolderPath $CBServer2016Path -InputObject $server2016CBInputObjects
+New-ConfigurationDeployment -Name $server2016Baselines -CollectionName $server2016CollectionName -PostponeDateTime $postponeDateTime
+Move-ConfigurationBaseline -Name $server2019Baselines -FolderPath $CBServer2019Path -InputObject $server2019CBInputObjects
+New-ConfigurationDeployment -Name $server2019Baselines -CollectionName $server2019CollectionName -PostponeDateTime $postponeDateTime

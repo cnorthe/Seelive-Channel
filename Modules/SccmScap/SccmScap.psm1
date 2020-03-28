@@ -330,7 +330,7 @@ function Remove-ConfigurationBaseline
         [Parameter()]
         [string]
         $Name
-   )
+    )
 
     $cmConfigurationBaselines = Get-CMBaseline -Name $Name
 
@@ -358,7 +358,7 @@ function Remove-ConfigurationItem
         [Parameter(Mandatory = $true)]
         [string]
         $Name
-   )
+    )
 
     $cmConfigurationItems = Get-CMConfigurationItem -Name $Name -Fast
 
