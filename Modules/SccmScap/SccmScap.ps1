@@ -178,3 +178,24 @@ Move-ConfigurationBaseline -Name $server2016Baselines -FolderPath $CBServer2016P
 New-ConfigurationDeployment -Name $server2016Baselines -CollectionName $server2016CollectionName -PostponeDateTime $postponeDateTime
 Move-ConfigurationBaseline -Name $server2019Baselines -FolderPath $CBServer2019Path -InputObject $server2019CBInputObjects
 New-ConfigurationDeployment -Name $server2019Baselines -CollectionName $server2019CollectionName -PostponeDateTime $postponeDateTime
+
+#Create Configuration Subscriptions
+
+#path to reports
+$rsItem1 = '/ConfigMgr_PS1/Compliance and Settings Management/Summary compliance by configuration baseline'
+$rsitem2 = '/ConfigMgr_PS1/Compliance and Settings Management/Summary compliance of a configuration baseline for a collection'
+
+#report parameter values
+$values = @{
+    name = 'Windows 10 Security Technical Implementation Guide[CAT I Only]'
+    collid = 'PS100023'
+}
+
+$fileSharePath = 'c:\temp\CMReports'
+$fileName = 'MyReport'
+$description = 'Daily to folder'
+$csvFormat = 'CSV'
+$fileShare = 'FileShare'
+
+#create new fileshare subscription
+New-RsSubscription -RsItem $rsitem2 -Description $description -RenderFormat $csvFormat -Schedule (New-RsScheduleXML -Daily 1) -DeliveryMethod $fileShare -FileSharePath $fileSharePath -FileName $fileName -FileWriteMode Overwrite -Parameters $values
