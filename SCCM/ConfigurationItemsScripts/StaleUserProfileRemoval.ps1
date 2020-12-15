@@ -3,7 +3,7 @@ $LogFile = "$env:windir\temp\ProfileCleanUp.log"
 $TodaysDate = (Get-Date)
 $Profiles = Get-CimInstance -ClassName Win32_UserProfile | Where-Object{$_.Special -eq $false} | Where-Object {$_.LastUseTIme -lt (Get-Date).AddDays(0-$SystemProfileRetention)}
 
-if ((Test-Path "\\mcdsus.mcds.usmc.mil\NETLOGON") -and $Profiles)
+if ((Test-Path "\\FQDN\NETLOGON") -and $Profiles)
 {
    "$TodaysDate Starting Profile Cleanup with a retention rate of $SystemProfileRetention days" | Out-File $LogFile -Append
     ForEach ($Profile in $Profiles)
