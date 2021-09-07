@@ -5,7 +5,7 @@ Version:     1.0
 
 .Synopsis
     This script compares GPOs exported to a CSV to what is in a target Active Directory environment. It will create a text report of
-    that shows only the Gpo Names that are stored in CSV, only the Gpo Names that are stored in the current Domain and only the Gpo Names that are stored in the CSV and Domain.
+    the Gpo Names that are stored in CSV, only the Gpo Names that are stored in the current Domain and only the Gpo Names that are stored in the CSV and Domain.
 .PARAMETERS
     -CsvPath:
         MANDATORY: False
