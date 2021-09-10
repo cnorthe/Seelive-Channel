@@ -5,7 +5,7 @@ Version:     1.0
 
 .Synopsis
     This script compares GPOs exported to a CSV to what is in a target Active Directory environment. It will create a text report of
-    the Gpo Names that are stored in CSV, only the Gpo Names that are stored in the current Domain and only the Gpo Names that are stored in the CSV and Domain.
+    only the Gpo Names that are stored in CSV, only the Gpo Names that are stored in the current Domain and only the Gpo Names that are stored in the CSV and Domain.
 .PARAMETERS
     -CsvPath:
         MANDATORY: False
@@ -26,15 +26,18 @@ Param (
     $ReportPath
 )
 
+#Import GPO module
+Import-Module GroupPolicy
+
 #import CSV file
 $GposCsv = Import-Csv -Path $CsvPath
-$GposCsv = $GposCsv | Select-Object GpoName
+$GposCsv = $GposCsv | Select-Object GpoName,DateCreated
 
 #Get Domain name for Gpos
 $Domain = $env:USERDNSDOMAIN
 
 #Get all the Gpos in the current Domain
-$Gpos = Get-GPO -All -Domain $Domain | Select-Object @{Name = 'GpoName'; E = { $_.DisplayName } }
+$Gpos = Get-GPO -All -Domain $Domain | Select-Object @{Name='GpoName';E={$_.DisplayName}},@{Name='DateCreated';E={$_.CreationTime}}
 
 #empty arrays for Gpos
 $GposCsvArray = [System.Collections.ArrayList]@()
@@ -59,7 +62,7 @@ $onlyInCsv = $GposCsvArray | Where-Object { $GposArray -notcontains $_ } | Sort-
 $onlyInDomain = $GposArray | Where-Object { $GposCsvArray -notcontains $_ } | Sort-Object -Property GpoName
 
 # Shows only the Gpo Names that are stored in the CSV and Domain
-$containedInBoth = $GposCsvArray | Where-Object { $GposArray -match $_ } | Sort-Object -Property GpoName
+$containedInBoth = $GposCsvArray | Where-Object { $GposArray.GpoName -match $_.GpoName } | Sort-Object -Property GpoName
 
 <#
 # Shows only the Gpo Names that are only in Csv and only in Domain
@@ -89,6 +92,6 @@ $outParams = @{
 $header | Out-File @outParams
 
 #create results in .txt file
-$onlyInCsv | Select-Object @{N = "GpoNames in CSV Domain"; E = { $_.GpoName } } | Out-File @outParams
-$onlyInDomain | Select-Object @{N = "GpoNames in $($env:USERDNSDOMAIN)"; E = { $_.GpoName } } | Out-File @outParams
-$containedInBoth | Select-Object @{N = "GpoNames in CSV and $($env:USERDNSDOMAIN)"; E = { $_.GpoName } } | Out-File @outParams
+$onlyInCsv | Out-File @outParams
+$onlyInDomain | Out-File @outParams
+$containedInBoth | Select-Object @{N = "GpoNames in CSV and $($env:USERDNSDOMAIN)";E={$_.GpoName}},DateCreated | Out-File @outParams
