@@ -34,7 +34,7 @@
         Created by Clive Northey 12/1/2021. Microsoft Corperation.
 
     .LINK
-	    None.
+	    https://github.com/cnorthe/Seelive-Channel/blob/master/Add-NTFSPermissions.ps1
 #>
 
 function Add-NTFSPermissions {
