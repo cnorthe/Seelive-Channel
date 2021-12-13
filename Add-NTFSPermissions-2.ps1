@@ -91,7 +91,6 @@ function Add-NTFSPermissions {
                     Set-Acl –path $item.FullName -AclObject $acl
                     Write-Verbose "Successfully assigned $($TargetAccessRules.FileSystemRights) access rights to $($objName) on $($item.FullName) shared folder." -Verbose
                 }
-
             }
             else {
                 Write-Host "Permissions for $($objName) was inherited from $($item.FullName)" -ForegroundColor Yellow
