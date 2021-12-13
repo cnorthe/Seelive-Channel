@@ -32,7 +32,7 @@
 
     .NOTES
 	    This is a function that can be reused.
-        Created by Clive Northey 12/1/2021. Microsoft Corperation.
+        Created by Clive Northey 12/13/2021. Microsoft Corperation.
 
     .LINK
 	    None.
@@ -57,9 +57,16 @@ function Add-NTFSPermissions {
 
     Try {
         #Get share folders and subfolders filepath
-        $rootPath = [Array] (Get-Item -Path $Path)
+        $RootItem = [Array] (Get-Item -Path $Path)
+        $ChildItems = [Array] (Get-ChildItem -Path $Path -Recurse)
+        if ($ChildItems) {
+            $AllItems = $RootItem + $ChildItems
+        }
+        else {
+            $AllItems = $RootItem
+        }
 
-        forEach ($item in $rootPath) {
+        forEach ($item in $AllItems) {
 
             #Get current ACL access rule from share folders
             $acl = Get-Acl $item.FullName
@@ -67,15 +74,16 @@ function Add-NTFSPermissions {
             #filter for target secuirty group
             $TargetAccessRules = $Acl.Access | Where-Object { $_.IdentityReference.Value -like $TargetObj -and $_.IsInherited -eq $false }
 
-            #Build ACL access rules from target security group
-            forEach ($objName in $ObjNames) {
-                $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule -ArgumentList ($objName, $TargetAccessRules.FileSystemRights, `
-                        $TargetAccessRules.InheritanceFlags, `
-                        $TargetAccessRules.PropagationFlags, `
-                        $TargetAccessRules.AccessControlType)
+            #check if target security group exist on shared folder
+            if ($TargetAccessRules.IdentityReference -eq $TargetObj -and $TargetAccessRules.IsInherited -eq $false) {
 
-                #check if target security group exist on shared folder
-                if ($TargetAccessRules.IdentityReference -eq $TargetObj) {
+                #Build ACL access rules from target security group
+                forEach ($objName in $ObjNames) {
+                    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule -ArgumentList ($objName, `
+                        $TargetAccessRules.FileSystemRights, `
+                            $TargetAccessRules.InheritanceFlags, `
+                            $TargetAccessRules.PropagationFlags, `
+                            $TargetAccessRules.AccessControlType)
 
                     $acl.AddAccessRule($accessRule)
 
@@ -83,16 +91,15 @@ function Add-NTFSPermissions {
                     Set-Acl –path $item.FullName -AclObject $acl
                     Write-Verbose "Successfully assigned $($TargetAccessRules.FileSystemRights) access rights to $($objName) on $($item.FullName) shared folder." -Verbose
                 }
-                else {
-                    Write-Verbose "Unable to find $($TargetObj) Permissions on $($item.FullName) shared folder" -Verbose
-                }
+
+            }
+            else {
+                Write-Host "Permissions for $($objName) was inherited from $($item.FullName)" -ForegroundColor Yellow
             }
         }
     }
     catch {
-        Write-Warning "Unable to assign $($TargetAccessRules.FileSystemRights) access rights to $($objName) on $($item.FullName) shared folder .$($_.Exception.message)"
+        throw $_
     }
 }
 #script ends
-
-Add-NTFSPermissions -Path $FolderPath -ObjNames 'Test\TestGroup1', 'Test\TestUser1' -TargetObj 'Lab\LabGroup1'
