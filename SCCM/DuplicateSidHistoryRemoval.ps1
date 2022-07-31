@@ -11,7 +11,7 @@
        This script was created Clive Northey. Microsoft Corperation
 
 .EXAMPLE
-       .\sidHistoryRemoval.ps1
+       .\DuplicateSidHistoryRemoval.ps1
 #>
 
 Param(
